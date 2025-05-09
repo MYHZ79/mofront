@@ -64,13 +64,11 @@ export interface GoalResponse {
   done: boolean;
 }
 
-export interface ConfigResponse {
-  goal_creation_fee: number;
-  min_goal_hours: number;
-  max_goal_hours: number;
-  min_goal_value: number;
-  max_goal_value: number;
-  otp_timeout: number;
+export interface PaymentResponse {
+  goal_id: number;
+  amount: number;
+  pgp_name: string;
+  tracing_code: string;
 }
 
 export const api = {
@@ -85,11 +83,6 @@ export const api = {
       apiRequest('/sendCode', {
         method: 'POST',
         body: JSON.stringify({ phone_number }),
-      }),
-
-    refreshToken: () =>
-      apiRequest<AuthResponse>('/refreshToken', {
-        method: 'POST',
       }),
   },
 
@@ -150,21 +143,9 @@ export const api = {
       }),
   },
 
-  config: {
-    get: () =>
-      apiRequest<ConfigResponse>('/getConfig', {
-        method: 'POST',
-      }),
-  },
-
   payments: {
-    get: (payment_id: number) =>
-      apiRequest<{
-        goal_id: number;
-        amount: number;
-        pgp_name: string;
-        tracing_code: string;
-      }>('/getPayment', {
+    getStatus: (payment_id: number) =>
+      apiRequest<PaymentResponse>('/getPayment', {
         method: 'POST',
         body: JSON.stringify({ payment_id }),
       }),

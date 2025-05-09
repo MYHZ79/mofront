@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { useAuthContext } from '../context/AuthContext';
 import { api } from '../config/api';
+import { useAuthContext } from '../context/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,7 +13,7 @@ interface AuthModalProps {
 
 export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalProps) {
   const { login } = useAuthContext();
-  const [isOtpMode, setIsOtpMode] = useState(false);
+  const [isOtpMode, setIsOtpMode] = useState(true);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [otp, setOtp] = useState('');
@@ -26,9 +26,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
     e.preventDefault();
     setIsLoading(true);
     try {
-      // const formattedPhone = `98${phone.replace(/^0/, '')}`;
       const success = await login(phone, password);
-      
       if (success) {
         toast.success('ورود با موفقیت انجام شد');
         onSuccess();
@@ -45,9 +43,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
     e.preventDefault();
     setIsLoading(true);
     try {
-      // const formattedPhone = `+98${phone.replace(/^0/, '')}`;
       const response = await api.auth.sendCode(phone);
-      
       if (response.ok) {
         setOtpSent(true);
         toast.success('کد تایید ارسال شد');
@@ -64,9 +60,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
     e.preventDefault();
     setIsLoading(true);
     try {
-      // const formattedPhone = `+98${phone.replace(/^0/, '')}`;
       const success = await login(phone, undefined, otp);
-      
       if (success) {
         toast.success('ورود با موفقیت انجام شد');
         onSuccess();

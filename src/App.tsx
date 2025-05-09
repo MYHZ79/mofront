@@ -93,73 +93,104 @@ function App() {
                 </div>
               </div>
 
-              {/* Features Section */}
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                  <div className="flex flex-col items-center text-center p-6 rounded-lg bg-white/5">
-                    <Target className="w-12 h-12 text-red-500 mb-4" />
-                    <h3 className="text-xl font-bold mb-2">هدف گذاری</h3>
-                    <p className="text-gray-400">هدف خود را مشخص کنید و زمان مورد نظر برای رسیدن به آن را تعیین کنید.</p>
+            {/* How It Works */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+              <h2 className="text-4xl font-bold text-center mb-16">چطور کار می‌کند؟</h2>
+              <div className="grid md:grid-cols-4 gap-12">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <Target className="w-8 h-8" />
                   </div>
-                  <div className="flex flex-col items-center text-center p-6 rounded-lg bg-white/5">
-                    <Heart className="w-12 h-12 text-red-500 mb-4" />
-                    <h3 className="text-xl font-bold mb-2">انتخاب خیریه</h3>
-                    <p className="text-gray-400">خیریه مورد نظر خود را از بین خیریه‌های معتبر انتخاب کنید.</p>
-                  </div>
-                  <div className="flex flex-col items-center text-center p-6 rounded-lg bg-white/5">
-                    <DollarSign className="w-12 h-12 text-red-500 mb-4" />
-                    <h3 className="text-xl font-bold mb-2">تعیین مبلغ</h3>
-                    <p className="text-gray-400">مبلغی که حاضرید برای رسیدن به هدفتان ریسک کنید را مشخص کنید.</p>
-                  </div>
-                  <div className="flex flex-col items-center text-center p-6 rounded-lg bg-white/5">
-                    <Shield className="w-12 h-12 text-red-500 mb-4" />
-                    <h3 className="text-xl font-bold mb-2">انتخاب ناظر</h3>
-                    <p className="text-gray-400">یک دوست یا آشنا را به عنوان ناظر انتخاب کنید تا پیشرفت شما را تایید کند.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* How It Works Section */}
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                <h2 className="text-4xl font-bold text-center mb-16">چطور کار می‌کند؟</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                  <div className="relative">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-500 text-white font-bold mb-4">1</div>
-                    <h3 className="text-xl font-bold mb-2">هدف و مبلغ را تعیین کنید</h3>
-                    <p className="text-gray-400">هدف خود را مشخص کنید و مبلغی که حاضرید برای رسیدن به آن ریسک کنید را تعیین کنید.</p>
-                  </div>
-                  <div className="relative">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-500 text-white font-bold mb-4">2</div>
-                    <h3 className="text-xl font-bold mb-2">ناظر و خیریه را انتخاب کنید</h3>
-                    <p className="text-gray-400">یک ناظر قابل اعتماد و یک خیریه معتبر را برای همکاری انتخاب کنید.</p>
-                  </div>
-                  <div className="relative">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-500 text-white font-bold mb-4">3</div>
-                    <h3 className="text-xl font-bold mb-2">شروع به تلاش کنید</h3>
-                    <p className="text-gray-400">برای رسیدن به هدف خود تلاش کنید. در صورت موفقیت پول به شما برمی‌گردد، در غیر این صورت به خیریه اهدا می‌شود.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* CTA Section */}
-              <div className="relative overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-                  <h2 className="text-4xl font-bold mb-8">همین حالا شروع کنید</h2>
-                  <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-                    با استفاده از این روش انگیزشی، به اهداف خود برسید و در عین حال به جامعه کمک کنید.
+                  <h3 className="text-xl font-bold mb-4">هدف‌گذاری کن</h3>
+                  <p className="text-gray-400">
+                    مشخص کن چه چیزی می‌خوای و تا کی. دقیق و زمان‌بندی شده تعیینش کن.
                   </p>
-                  <button
-                    onClick={() => !isAuthenticated && setShowAuthModal(true)}
-                    className="px-8 py-4 bg-red-500 rounded-lg font-bold hover:bg-red-600 transition-colors inline-flex items-center gap-2"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                    {isAuthenticated ? 'ثبت هدف جدید' : 'ثبت نام و شروع'}
-                  </button>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <Shield className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">ناظر انتخاب کن</h3>
+                  <p className="text-gray-400">
+                    یک ناظر معتمد انتخاب کن که پیشرفتت رو تایید کنه. این تضمین می‌کنه که واقعاً به هدفت رسیدی.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <DollarSign className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">پول بذار روش</h3>
+                  <p className="text-gray-400">
+                    هر چقدر بیشتر ریسک کنی، انگیزه‌ت بیشتر میشه. اگر به هدفت نرسی، پولت به خیریه میره.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <Heart className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">تاثیر مثبت</h3>
+                  <p className="text-gray-400">
+                    به هدفت برس و پولت رو پس بگیر، یا با کمک به خیریه تاثیر مثبتی بذار.
+                  </p>
                 </div>
               </div>
             </div>
-          } />
-        </Routes>
+
+            {/* Social Proof */}
+            <div className="bg-white/5 py-24">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid md:grid-cols-3 gap-8">
+                  <blockquote className="p-6 border border-white/10 rounded-lg">
+                    <p className="text-lg mb-4">
+                      "بالاخره بعد از ۲ سال تعلل، کتابم رو نوشتم. ناظرم هر هفته پیشرفتم رو چک می‌کرد و این باعث شد واقعاً متعهد بمونم."
+                    </p>
+                    <footer className="text-gray-400">- سارا ک.، نویسنده</footer>
+                  </blockquote>
+                  <blockquote className="p-6 border border-white/10 rounded-lg">
+                    <p className="text-lg mb-4">
+                      "تو ۶ ماه ۱۵ کیلو وزن کم کردم. مربی باشگاهم به عنوان ناظر انتخاب کردم و نتیجه فوق‌العاده بود."
+                    </p>
+                    <footer className="text-gray-400">- محمد ر.، برنامه‌نویس</footer>
+                  </blockquote>
+                  <blockquote className="p-6 border border-white/10 rounded-lg">
+                    <p className="text-lg mb-4">
+                      "ناظرم یک متخصص کسب و کار بود که هر مرحله رو با دقت بررسی می‌کرد. این باعث شد مطمئن باشم در مسیر درست حرکت می‌کنم."
+                    </p>
+                    <footer className="text-gray-400">- علی ط.، کارآفرین</footer>
+                  </blockquote>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+              <div className="bg-red-500 rounded-2xl p-12">
+                <h2 className="text-4xl font-bold mb-6">آماده‌ای تعلل رو کنار بذاری؟</h2>
+                <p className="text-xl mb-8 max-w-2xl mx-auto">
+                  به هزاران نفری بپیوند که با تعهد به هدفشون و نظارت یک فرد معتمد، یا موفق شدن یا به خیریه کمک کردن.
+                </p>
+                <button
+                onClick={() => !isAuthenticated && setShowAuthModal(true)} 
+                className="px-8 py-4 bg-black rounded-lg font-bold hover:bg-gray-900 transition-colors flex items-center gap-2 mx-auto">
+                  {isAuthenticated ? 'ثبت هدف جدید' : 'همین حالا شروع کن'}
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <footer className="border-t border-white/10 py-8">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p className="text-gray-400">© ۲۰۲۵ همین الان انجامش بده. تمامی حقوق محفوظ است.</p>
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <AlertCircle className="w-4 h-4" />
+                  <span>نتایج ممکن است متفاوت باشد. در صورت عدم موفقیت، پول شما به خیریه اهدا خواهد شد.</span>
+                </div>
+              </div>
+            </footer>
+          </div>
+        } />
+      </Routes>
       </main>
     </div>
   );

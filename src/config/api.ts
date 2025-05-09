@@ -71,6 +71,15 @@ export interface PaymentResponse {
   tracing_code: string;
 }
 
+export interface ConfigResponse {
+  goal_creation_fee: number;
+  min_goal_hours: number;
+  max_goal_hours: number;
+  min_goal_value: number;
+  max_goal_value: number;
+  otp_timeout: number;
+}
+
 export const api = {
   auth: {
     login: (data: { phone_number: string; password?: string; code?: string }) =>
@@ -83,6 +92,11 @@ export const api = {
       apiRequest('/sendCode', {
         method: 'POST',
         body: JSON.stringify({ phone_number }),
+      }),
+
+    refreshToken: () =>
+      apiRequest<AuthResponse>('/refreshToken', {
+        method: 'POST',
       }),
   },
 
@@ -140,6 +154,13 @@ export const api = {
       apiRequest<GoalResponse>('/superviseGoal', {
         method: 'POST',
         body: JSON.stringify({ goal_id, done, description }),
+      }),
+  },
+
+  config: {
+    get: () =>
+      apiRequest<ConfigResponse>('/getConfig', {
+        method: 'POST',
       }),
   },
 

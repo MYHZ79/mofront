@@ -30,7 +30,7 @@ export function ProfilePage() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('https://test.com/api/getMe', {
+        const response = await fetch('https://imotiv.ir/api/getMe', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ export function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://test.com/api/editUser', {
+      const response = await fetch('https://imotiv.ir/api/editUser', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -33,7 +33,7 @@ export function GoalDetailsPage() {
   useEffect(() => {
     const fetchGoal = async () => {
       try {
-        const response = await fetch('https://test.com/api/viewGoal', {
+        const response = await fetch('https://imotiv.ir/api/viewGoal', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

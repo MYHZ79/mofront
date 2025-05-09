@@ -56,7 +56,7 @@ export function GoalsPage() {
     const fetchData = async () => {
       try {
         const [goalsResponse, supervisionsResponse] = await Promise.all([
-          fetch('https://test.com/api/getGoals', {
+          fetch('https://imotiv.ir/api/getGoals', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export function GoalsPage() {
             },
             body: JSON.stringify({ page: 0 }),
           }),
-          fetch('https://test.com/api/getSupervisions', {
+          fetch('https://imotiv.ir/api/getSupervisions', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

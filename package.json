@@ -1,12 +1,13 @@
 {
   "dependencies": {
     "@hassanmojab/react-modern-calendar-datepicker": "^3.1.7",
+    "date-fns": "^3.3.1",
+    "jalali-moment": "^3.3.11",
+    "lucide-react": "^0.358.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.1",
-    "react-router-dom": "^6.22.3",
-    "lucide-react": "^0.358.0",
-    "date-fns": "^3.3.1"
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "@types/react": "^18.2.64",

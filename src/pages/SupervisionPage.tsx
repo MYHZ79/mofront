@@ -6,16 +6,12 @@ import { Goal } from '../types/goal';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
 
-// Test data
-const testGoal: Goal | null = null;
-
-export function GoalDetailsPage() {
+export function SupervisionPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [goal, setGoal] = useState<Goal | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isSupervisor, setIsSupervisor] = useState(false);
-  const [isOwner, setIsOwner] = useState(false);
+  const [supervisionDescription, setSupervisionDescription] = useState('');
 
   useEffect(() => {
     const fetchGoal = async () => {
@@ -23,49 +19,35 @@ export function GoalDetailsPage() {
         const response = await api.goals.view(parseInt(id!));
         if (response.ok && response.data) {
           setGoal(response.data);
-          // Check if current user is supervisor (otherwise they are owner)
-          const userPhone = localStorage.getItem('userPhone');
-          if (userPhone) {
-            setIsSupervisor(response.data.supervisor_phone_number === userPhone);
-            setIsOwner(response.data.supervisor_phone_number !== userPhone);
-          }
         } else {
           setGoal(null);
           toast.error(response.error || 'خطا در دریافت اطلاعات هدف');
+          navigate('/goals');
         }
       } catch (error) {
         setGoal(null);
-        setIsSupervisor(false);
-        setIsOwner(false);
         toast.error('خطا در دریافت اطلاعات هدف');
+        navigate('/goals');
       } finally {
         setLoading(false);
       }
     };
 
     fetchGoal();
-  }, [id]);
+  }, [id, navigate]);
 
-  const handleSupervision = async (approve: boolean) => {
+  const handleSupervision = async (done: boolean) => {
     try {
-      // Implement supervision API call here
-      toast.success(approve ? 'هدف با موفقیت تایید شد' : 'هدف رد شد');
+      const response = await api.goals.supervise(parseInt(id!), done, supervisionDescription);
+      if (response.ok) {
+        toast.success(done ? 'هدف با موفقیت تایید شد' : 'هدف رد شد');
+        navigate('/goals');
+      } else {
+        toast.error(response.error || 'خطا در ثبت نظارت');
+      }
     } catch (error) {
       toast.error('خطا در ثبت نظارت');
     }
-  };
-
-  const getRemainingTime = () => {
-    if (!goal) return '';
-    const now = Math.floor(Date.now() / 1000);
-    const remaining = goal.deadline - now;
-    
-    if (remaining <= 0) return 'زمان به پایان رسیده';
-    
-    const days = Math.floor(remaining / (24 * 60 * 60));
-    const hours = Math.floor((remaining % (24 * 60 * 60)) / (60 * 60));
-    
-    return `${days} روز و ${hours} ساعت باقی مانده`;
   };
 
   if (loading) {
@@ -140,7 +122,7 @@ export function GoalDetailsPage() {
                 <div>
                   <p className="text-sm text-gray-400">وضعیت</p>
                   <p className={goal.done ? 'text-green-500' : 'text-yellow-500'}>
-                    {goal.done ? 'تکمیل شده' : getRemainingTime()}
+                    {goal.done ? 'تکمیل شده' : 'در حال انجام'}
                   </p>
                 </div>
               </div>
@@ -173,38 +155,32 @@ export function GoalDetailsPage() {
             </div>
           </div>
 
-          {isSupervisor && !goal.done && (
-            <div className="pt-6 border-t border-gray-800">
-              <p className="text-lg font-medium mb-4">تایید یا رد هدف</p>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => handleSupervision(true)}
-                  className="flex-1 bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  تایید هدف
-                </button>
-                <button
-                  onClick={() => handleSupervision(false)}
-                  className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <XCircle className="w-5 h-5" />
-                  رد هدف
-                </button>
-              </div>
+          <div className="pt-6 border-t border-gray-800">
+            <p className="text-lg font-medium mb-4">ثبت نظارت</p>
+            <textarea
+              value={supervisionDescription}
+              onChange={(e) => setSupervisionDescription(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+              placeholder="توضیحات خود را وارد کنید"
+              rows={4}
+            />
+            <div className="flex gap-4 mt-4">
+              <button
+                onClick={() => handleSupervision(true)}
+                className="flex-1 bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+              >
+                <CheckCircle className="w-5 h-5" />
+                تایید هدف
+              </button>
+              <button
+                onClick={() => handleSupervision(false)}
+                className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+              >
+                <XCircle className="w-5 h-5" />
+                رد هدف
+              </button>
             </div>
-          )}
-
-          {isOwner && !goal.done && (
-            <div className="pt-6 border-t border-gray-800">
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
-                <p className="text-yellow-200">
-                  <Clock className="w-5 h-5 inline-block mr-2" />
-                  {getRemainingTime()}
-                </p>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

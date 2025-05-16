@@ -4,12 +4,70 @@
 
 @font-face {
   font-family: 'Vazirmatn';
-  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/fonts/webfonts/vazirmatn-v33.003-variable.woff2') format('woff2-variations');
+  src: url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@33.003/misc/Farsi-Digits/Vazirmatn-FD-font-face.css') format('woff2-variations');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 body {
-  font-family: 'Vazirmatn', system-ui, sans-serif;
+  font-family: 'Vazirmatn FD', system-ui, sans-serif;
+}
+
+.DatePicker {
+  width: 100%;
+}
+.DatePicker__input {
+  width: 100%;
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+.DatePicker__input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+}
+.Calendar {
+  background: #374151;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  box-shadow: none;
+  color: white;
+}
+.Calendar__day {
+  color: white !important;
+}
+.Calendar__day.-selected {
+  background-color: #ef4444 !important;
+  color: white !important;
+}
+.Calendar__day:hover {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+}
+.Calendar__monthYear {
+  color: white !important;
+}
+.Calendar__monthSelector, .Calendar__yearSelector {
+  background: #1f2937 !important;
+}
+.Calendar__monthSelector button, .Calendar__yearSelector button {
+  color: white !important;
+}
+.Calendar__monthSelector button:hover, .Calendar__yearSelector button:hover {
+  background-color: rgba(239, 68, 68, 0.2) !important;
+}
+.Calendar__monthText, .Calendar__yearText {
+  color: white !important;
+}
+.Calendar__monthArrow, .Calendar__yearArrow {
+  border-color: white !important;
+}
+.Calendar__yearSelectorText {
+  color: white !important;
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }

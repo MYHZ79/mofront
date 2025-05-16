@@ -30,3 +30,65 @@ export const validateDeadline = (date: Date): boolean => {
 
   return date >= minDate && date <= maxDate;
 };
+
+const numberToPersianWords = (amount: number): string => {
+  if (amount === 0) {
+    return "صفر";
+  }
+
+  const units = ["", "هزار", "میلیون", "میلیارد", "تریلیون"];
+  const numbers = ["", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه"];
+  const tens = ["", "", "بیست", "سی", "چهل", "پنجاه", "شصت", "هفتاد", "هشتاد", "نود"];
+  const hundreds = ["", "صد", "دویست", "سیصد", "چهارصد", "پانصد", "ششصد", "هفتصد", "هشتصد", "نهصد"];
+  const tenToNineteen = ["ده", "یازده", "دوازده", "سیزده", "چهارده", "پانزده", "شانزده", "هفده", "هجده", "نوزده"];
+
+  const groupToWords = (group: number): string => {
+    if (group === 0) {
+      return "";
+    }
+
+    let words = "";
+
+    const hundred = Math.floor(group / 100);
+    group %= 100;
+
+    const ten = Math.floor(group / 10);
+    const unit = group % 10;
+
+    if (hundred > 0) {
+      words += hundreds[hundred] + " و ";
+    }
+
+    if (ten >= 2) {
+      words += tens[ten] + " و ";
+      if (unit > 0) {
+        words += numbers[unit] + " و ";
+      }
+    } else if (ten === 1) {
+      words += tenToNineteen[unit] + " و ";
+    } else if (unit > 0) {
+      words += numbers[unit] + " و ";
+    }
+
+    return words.replace(/ و $/g, "");
+  };
+
+  let words = "";
+  let unitIndex = 0;
+  while (amount > 0) {
+    const group = amount % 1000;
+    amount = Math.floor(amount / 1000);
+
+    if (group > 0) {
+      const groupWords = groupToWords(group);
+      words = groupWords + " " + units[unitIndex] + " و " + words;
+    }
+
+    unitIndex++;
+  }
+
+  words = words.replace(/ و $/g, "");
+  return words;
+};
+
+export { numberToPersianWords };

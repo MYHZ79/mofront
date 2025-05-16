@@ -62,6 +62,11 @@ export interface GoalResponse {
   supervisor_phone_number: string;
   supervisor_email: string;
   done: boolean;
+  created_at: number;
+  creator_phone_number: string;
+  creator_first_name: string;
+  creator_last_name: string;
+  creator_email: string;
 }
 
 export interface PaymentResponse {

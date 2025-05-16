@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Target, Plus, LogIn, User, ChevronDown } from 'lucide-react';
+import { useAuthContext } from '../context/AuthContext';
 
 interface HeaderProps {
   onShowAuth: () => void;
@@ -10,13 +11,8 @@ export function Header({ onShowAuth }: HeaderProps) {
   const location = useLocation();
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-  }, []);
+  const { isAuthenticated } = useAuthContext();
 
   useEffect(() => {
     const handleScroll = () => {

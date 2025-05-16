@@ -3,6 +3,7 @@ import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../config/api';
 import { useAuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface AuthModalProps {
 
 export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalProps) {
   const { login } = useAuthContext();
+  const navigate = useNavigate();
   const [isOtpMode, setIsOtpMode] = useState(true);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +31,12 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
       const success = await login(phone, password);
       if (success) {
         toast.success('ورود با موفقیت انجام شد');
-        onSuccess();
+        onClose();
+        if (goalTitle) {
+          onSuccess();
+        } else {
+          navigate('/');
+        }
       }
     } catch (error) {
       toast.error('خطا در ورود به حساب کاربری');
@@ -63,7 +70,12 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
       const success = await login(phone, undefined, otp);
       if (success) {
         toast.success('ورود با موفقیت انجام شد');
-        onSuccess();
+        onClose();
+        if (goalTitle) {
+          onSuccess();
+        } else {
+          navigate('/goals');
+        }
       }
     } catch (error) {
       toast.error('کد وارد شده صحیح نیست');
@@ -117,6 +129,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
                 className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900"
                 placeholder="مثال: ۰۹۱۲۳۴۵۶۷۸۹"
                 required
+                autoComplete="username"
               />
             </div>
             
@@ -131,6 +144,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
                 className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900"
                 placeholder="رمز عبور خود را وارد کنید"
                 required
+                autoComplete="current-password"
               />
             </div>
             

@@ -9,10 +9,10 @@ export interface Goal {
   done: boolean;
   created_at: number;
   supervised_at?: number;
-  phone_number?: string;
-  creator_first_name?: string;
-  creator_last_name?: string;
-  email?: string;
+  creator_phone_number: string;
+  creator_first_name: string;
+  creator_last_name: string;
+  creator_email: string;
 }
 
 export interface User {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Target, Heart, DollarSign, AlertCircle, Shield } from 'lucide-react';
 import { AuthModal } from './components/AuthModal';
@@ -9,13 +9,38 @@ import { GoalsPage } from './pages/GoalsPage';
 import { GoalDetailsPage } from './pages/GoalDetailsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PaymentStatusPage } from './pages/PaymentStatusPage';
+import { SupervisionPage } from './pages/SupervisionPage';
 import { useAuthContext } from './context/AuthContext';
+import { api } from './config/api';
+import { CONFIG } from './config/constants';
 
 function App() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthContext();
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [goalTitle, setGoalTitle] = React.useState('');
+  const [configLoaded, setConfigLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await api.config.get();
+        if (response.ok && response.data) {
+          CONFIG.GOAL_DEADLINE.MIN_DAYS = response.data.min_goal_hours / 24;
+          CONFIG.GOAL_DEADLINE.MAX_DAYS = response.data.max_goal_hours / 24;
+          CONFIG.GOAL_AMOUNT.MIN = response.data.min_goal_value;
+          CONFIG.GOAL_AMOUNT.MAX = response.data.max_goal_value;
+          setConfigLoaded(true);
+        } else {
+          toast.error(response.error || 'Failed to load config');
+        }
+      } catch (error) {
+        toast.error('Error loading config');
+      }
+    };
+
+    fetchConfig();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +67,7 @@ function App() {
           <Route path="/create-goal" element={<CreateGoalPage />} />
           <Route path="/goals" element={<GoalsPage />} />
           <Route path="/goals/:id" element={<GoalDetailsPage />} />
+          <Route path="/supervisions/:id" element={<SupervisionPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/payment-status" element={<PaymentStatusPage />} />
           <Route path="/" element={
@@ -58,11 +84,11 @@ function App() {
                 <img
                   src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=2940"
                   alt="Background"
-                  className="absolute inset-0 w-full h-full object-cover opacity-20"
+                  className="absolute inset-0 w-full h-full object-cover opacity-30"
                 />
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 sm:pb-32">
                   <div className="text-center">
-                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
+                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-shadow">
                       همین الان انجامش بده
                       <span className="block text-red-500">یا به خیریه کمک کن</span>
                     </h1>
@@ -190,6 +216,7 @@ function App() {
             </footer>
           </div>
         } />
+          <Route path="/supervisions/:id" element={<SupervisionPage />} />
       </Routes>
       </main>
     </div>

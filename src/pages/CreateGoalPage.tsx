@@ -4,9 +4,12 @@ import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
 import toast from 'react-hot-toast';
-import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline } from '../config/constants';
+import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToPersianWords } from '../config/constants';
+import { api } from '../config/api';
+import jalali from 'jalali-moment';
+import { useAuthContext } from '../context/AuthContext';
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+type Step = 1 | 2 | 3 | 4 | 5;
 
 interface GoalData {
   title: string;
@@ -14,7 +17,6 @@ interface GoalData {
   deadline: string;
   amount: string;
   supervisor: string;
-  observer: string;
 }
 
 interface DayObject {
@@ -25,21 +27,17 @@ interface DayObject {
 
 // Convert Persian date to Gregorian
 const toGregorianDate = (day: DayObject): Date => {
-  // Persian calendar offset is approximately 622 years
-  const persianYear = day.year + 622;
-  const date = new Date();
-  date.setFullYear(persianYear);
-  date.setMonth(day.month - 1);
-  date.setDate(day.day);
-  return date;
+  const jalaliDate = jalali.from(`${day.year}-${day.month}-${day.day}`, 'fa','YYYY/MM/DD');
+  return jalaliDate.toDate();
 };
 
 // Convert Gregorian date to Persian
 const toPersianDate = (date: Date): DayObject => {
+  const jalaliDate = jalali(date);
   return {
-    year: date.getFullYear() - 622,
-    month: date.getMonth() + 1,
-    day: date.getDate()
+    year: jalaliDate.jYear(),
+    month: jalaliDate.jMonth() + 1,
+    day: jalaliDate.jDate()
   };
 };
 
@@ -70,18 +68,18 @@ export function CreateGoalPage() {
   const defaultDate = getDefaultDate();
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
+  const { user } = useAuthContext();
   const [goalData, setGoalData] = useState<GoalData>({
     title: initialTitle,
     description: '',
     deadline: toGregorianDate(defaultDate).toISOString().split('T')[0],
     amount: formatAmount(CONFIG.GOAL_AMOUNT.MIN),
     supervisor: '',
-    observer: '',
   });
   
   const [selectedDay, setSelectedDay] = useState<DayObject>(defaultDate);
   const [errors, setErrors] = useState<Partial<GoalData>>({});
-  const [amountInput, setAmountInput] = useState(CONFIG.GOAL_AMOUNT.MIN.toString());
+  const [amountInput, setAmountInput] = useState('');
 
   const validateStep = (step: Step): boolean => {
     const newErrors: Partial<GoalData> = {};
@@ -118,14 +116,6 @@ export function CreateGoalPage() {
           newErrors.supervisor = 'شماره موبایل معتبر نیست';
         }
         break;
-
-      case 5:
-        if (!isValidIranianMobile(goalData.observer)) {
-          newErrors.observer = 'شماره موبایل معتبر نیست';
-        } else if (goalData.observer === goalData.supervisor) {
-          newErrors.observer = 'ناظر نمی‌تواند با سرپرست یکسان باشد';
-        }
-        break;
     }
 
     setErrors(newErrors);
@@ -149,25 +139,55 @@ export function CreateGoalPage() {
   const handleAmountChange = (value: string) => {
     // Remove non-numeric characters
     const numericValue = value.replace(/[^0-9]/g, '');
-    
-    if (numericValue) {
-      const amount = parseInt(numericValue);
-      setAmountInput(amount.toString());
-      setGoalData({
-        ...goalData,
-        amount: formatAmount(amount),
-      });
-    } else {
-      setAmountInput('');
-      setGoalData({
-        ...goalData,
-        amount: '',
-      });
+    setAmountInput(numericValue);
+
+    const amount = Number(numericValue);
+    const newErrors: Partial<GoalData> = {};
+
+    if (!amount) {
+      newErrors.amount = 'مبلغ اجباری است';
+    } else if (amount < CONFIG.GOAL_AMOUNT.MIN || amount > CONFIG.GOAL_AMOUNT.MAX) {
+      newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.MIN)} و ${formatAmount(CONFIG.GOAL_AMOUNT.MAX)} تومان باشد`;
     }
+
+    setErrors(newErrors);
+
+    setGoalData({
+      ...goalData,
+      amount: numericValue,
+    });
+  };
+
+  const handleSupervisorChange = (value: string) => {
+    setGoalData({ ...goalData, supervisor: value });
+    const newErrors: Partial<GoalData> = {};
+    if (!isValidIranianMobile(value)) {
+      newErrors.supervisor = 'شماره موبایل معتبر نیست';
+    } else if (user?.phone?.slice(2) === value?.slice(1)) {
+      newErrors.supervisor = 'شماره موبایل سرپرست نمی‌تواند با شماره شما یکسان باشد';
+    }
+    setErrors(newErrors);
   };
 
   const handleSubmit = async () => {
-    toast.success('در حال انتقال به درگاه پرداخت...');
+    try {
+      const response = await api.goals.create({
+        goal: goalData.title,
+        description: goalData.description || undefined,
+        value: parseInt(amountInput),
+        deadline: Math.floor(new Date(goalData.deadline).getTime() / 1000),
+        supervisor_phone_number: goalData.supervisor
+      });
+
+      if (response.ok && response.data?.payment_url) {
+        window.location.href = response.data.payment_url;
+      } else {
+        toast.error(response.error || 'خطا در ایجاد هدف');
+      }
+    } catch (error) {
+      console.error('Error creating goal:', error);
+      toast.error('خطا در ارتباط با سرور');
+    }
   };
 
   const renderStep = () => {
@@ -176,7 +196,7 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">عنوان هدف</label>
+<label className="block text-sm font-medium mb-2">عنوان هدف <Clipboard className="inline-block w-4 h-4 ml-1" /></label>
               <div className="relative">
                 <Target className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
@@ -211,63 +231,6 @@ export function CreateGoalPage() {
               <label className="block text-sm font-medium mb-2">تاریخ سررسید</label>
               <div className="relative">
                 <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
-                <style>
-                  {`
-                    .DatePicker {
-                      width: 100%;
-                    }
-                    .DatePicker__input {
-                      width: 100%;
-                      padding: 0.5rem 2.5rem 0.5rem 1rem;
-                      border-radius: 0.5rem;
-                      background: rgba(255, 255, 255, 0.1);
-                      border: 1px solid rgba(255, 255, 255, 0.2);
-                      color: white;
-                    }
-                    .DatePicker__input:focus {
-                      outline: none;
-                      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
-                    }
-                    .Calendar {
-                      background: #1f2937;
-                      border: 1px solid rgba(255, 255, 255, 0.1);
-                      border-radius: 0.5rem;
-                      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-                      color: white;
-                    }
-                    .Calendar__day {
-                      color: white !important;
-                    }
-                    .Calendar__day.-selected {
-                      background-color: #ef4444 !important;
-                      color: white !important;
-                    }
-                    .Calendar__day:hover {
-                      background-color: rgba(239, 68, 68, 0.2) !important;
-                    }
-                    .Calendar__monthYear {
-                      color: white !important;
-                    }
-                    .Calendar__monthSelector, .Calendar__yearSelector {
-                      background: #1f2937 !important;
-                    }
-                    .Calendar__monthSelector button, .Calendar__yearSelector button {
-                      color: white !important;
-                    }
-                    .Calendar__monthSelector button:hover, .Calendar__yearSelector button:hover {
-                      background-color: rgba(239, 68, 68, 0.2) !important;
-                    }
-                    .Calendar__monthText, .Calendar__yearText {
-                      color: white !important;
-                    }
-                    .Calendar__monthArrow, .Calendar__yearArrow {
-                      border-color: white !important;
-                    }
-                    .Calendar__yearSelectorText {
-                      color: white !important;
-                    }
-                  `}
-                </style>
                 <DatePicker
                   value={selectedDay}
                   onChange={(day) => {
@@ -307,7 +270,7 @@ export function CreateGoalPage() {
                 <DollarSign className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
                   type="text"
-                  value={goalData.amount}
+                  value={amountInput}
                   onChange={(e) => handleAmountChange(e.target.value)}
                   className="w-full px-4 py-2 pr-10 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-left"
                   placeholder="مثال: 1,000,000"
@@ -316,6 +279,11 @@ export function CreateGoalPage() {
               </div>
               {errors.amount && (
                 <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
+              )}
+              {!errors.amount && amountInput && (
+                <p className="mt-1 text-sm text-gray-400">
+                  {numberToPersianWords(Number(amountInput))} تومان
+                </p>
               )}
               <p className="mt-2 text-sm text-gray-400">
                 مبلغ باید بین {formatAmount(CONFIG.GOAL_AMOUNT.MIN)} و {formatAmount(CONFIG.GOAL_AMOUNT.MAX)} تومان باشد.
@@ -328,13 +296,13 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">شماره موبایل سرپرست</label>
+              <label className="block text-sm font-medium mb-2">شماره موبایل ناظر</label>
               <div className="relative">
                 <Shield className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
                   type="tel"
                   value={goalData.supervisor}
-                  onChange={(e) => setGoalData({ ...goalData, supervisor: e.target.value })}
+                  onChange={(e) => handleSupervisorChange(e.target.value)}
                   className="w-full px-4 py-2 pr-10 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-left"
                   placeholder="مثال: 09123456789"
                   maxLength={11}
@@ -343,33 +311,6 @@ export function CreateGoalPage() {
               </div>
               {errors.supervisor && (
                 <p className="mt-1 text-sm text-red-500">{errors.supervisor}</p>
-              )}
-              <p className="mt-2 text-sm text-gray-400">
-                سرپرست شما باید یک شماره موبایل ایرانی معتبر داشته باشد.
-              </p>
-            </div>
-          </div>
-        );
-
-      case 5:
-        return (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">شماره موبایل ناظر</label>
-              <div className="relative">
-                <Shield className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
-                <input
-                  type="tel"
-                  value={goalData.observer}
-                  onChange={(e) => setGoalData({ ...goalData, observer: e.target.value })}
-                  className="w-full px-4 py-2 pr-10 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-left"
-                  placeholder="مثال: 09123456789"
-                  maxLength={11}
-                  dir="ltr"
-                />
-              </div>
-              {errors.observer && (
-                <p className="mt-1 text-sm text-red-500">{errors.observer}</p>
               )}
               <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                 <div className="flex gap-2">
@@ -387,7 +328,7 @@ export function CreateGoalPage() {
           </div>
         );
 
-      case 6:
+      case 5:
         return (
           <div className="space-y-6">
             <div className="bg-white/5 rounded-lg p-6 border border-white/10">
@@ -412,12 +353,8 @@ export function CreateGoalPage() {
                   <dd className="mt-1">{goalData.amount} تومان</dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-gray-400">شماره موبایل سرپرست</dt>
-                  <dd className="mt-1 font-mono">{goalData.supervisor}</dd>
-                </div>
-                <div>
                   <dt className="text-sm text-gray-400">شماره موبایل ناظر</dt>
-                  <dd className="mt-1 font-mono">{goalData.observer}</dd>
+                  <dd className="mt-1 font-mono">{goalData.supervisor}</dd>
                 </div>
               </dl>
             </div>
@@ -445,7 +382,7 @@ export function CreateGoalPage() {
         </button>
 
         <div className="flex items-center justify-center mb-8">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 5 }).map((_, i) => (
             <React.Fragment key={i}>
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center ${
@@ -458,7 +395,7 @@ export function CreateGoalPage() {
               >
                 {i + 1}
               </div>
-              {i < 5 && (
+              {i < 4 && (
                 <div
                   className={`h-0.5 w-4 ${
                     i + 1 < currentStep ? 'bg-green-500' : 'bg-gray-700'
@@ -482,7 +419,7 @@ export function CreateGoalPage() {
                 قبلی
               </button>
             )}
-            {currentStep < 6 && (
+            {currentStep < 5 && (
               <button
                 onClick={handleNext}
                 className="mr-auto flex items-center gap-2 text-white bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"

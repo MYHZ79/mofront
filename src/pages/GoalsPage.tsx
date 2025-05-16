@@ -4,47 +4,9 @@ import { Target, Eye, Calendar, DollarSign, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Goal } from '../types/goal';
 import { formatAmount } from '../config/constants';
+import { api } from '../config/api';
 
-// Test data for goals
-const testGoals: Goal[] = [
-  {
-    goal_id: 1,
-    goal: "ترک سیگار",
-    description: "قصد دارم در مدت ۳۰ روز سیگار را کاملاً ترک کنم",
-    value: 2000000,
-    deadline: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days from now
-    supervisor_phone_number: "09123456789",
-    supervisor_email: "supervisor@example.com",
-    done: false,
-    created_at: Math.floor(Date.now() / 1000) - (5 * 24 * 60 * 60), // 5 days ago
-  },
-  {
-    goal_id: 2,
-    goal: "نوشتن کتاب",
-    description: "تکمیل نگارش کتاب در موضوع برنامه‌نویسی",
-    value: 5000000,
-    deadline: Math.floor(Date.now() / 1000) + (60 * 24 * 60 * 60), // 60 days from now
-    supervisor_phone_number: "09198765432",
-    supervisor_email: "book.supervisor@example.com",
-    done: false,
-    created_at: Math.floor(Date.now() / 1000) - (10 * 24 * 60 * 60), // 10 days ago
-  }
-];
 
-// Test data for supervisions
-const testSupervisions: Goal[] = [
-  {
-    goal_id: 3,
-    goal: "یادگیری زبان انگلیسی",
-    description: "رسیدن به سطح B2 در مدت ۳ ماه",
-    value: 3000000,
-    deadline: Math.floor(Date.now() / 1000) + (90 * 24 * 60 * 60), // 90 days from now
-    supervisor_phone_number: "09123456789",
-    supervisor_email: "english.teacher@example.com",
-    done: false,
-    created_at: Math.floor(Date.now() / 1000) - (15 * 24 * 60 * 60), // 15 days ago
-  }
-];
 
 export function GoalsPage() {
   const navigate = useNavigate();
@@ -56,43 +18,22 @@ export function GoalsPage() {
     const fetchData = async () => {
       try {
         const [goalsResponse, supervisionsResponse] = await Promise.all([
-          fetch('https://imotiv.ir/api/getGoals', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            },
-            body: JSON.stringify({ page: 0 }),
-          }),
-          fetch('https://imotiv.ir/api/getSupervisions', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            },
-            body: JSON.stringify({ page: 0 }),
-          }),
+          api.goals.getAll(0),
+          api.goals.getSupervisions(0)
         ]);
 
-        const goalsData = await goalsResponse.json();
-        const supervisionsData = await supervisionsResponse.json();
-
-        if (goalsData.ok) {
-          setGoals(goalsData.data.goals);
+        if (goalsResponse.ok && goalsResponse.data?.goals) {
+          setGoals(goalsResponse.data.goals);
         } else {
-          // Use test data if API fails
-          setGoals(testGoals);
+          toast.error(goalsResponse.error || 'Failed to load goals');
         }
-        if (supervisionsData.ok) {
-          setSupervisions(supervisionsData.data.goals);
+
+        if (supervisionsResponse.ok && supervisionsResponse.data?.goals) {
+          setSupervisions(supervisionsResponse.data.goals);
         } else {
-          // Use test data if API fails
-          setSupervisions(testSupervisions);
+          toast.error(supervisionsResponse.error || 'Failed to load supervisions');
         }
       } catch (error) {
-        // Use test data if API fails
-        setGoals(testGoals);
-        setSupervisions(testSupervisions);
         toast.error('خطا در دریافت اطلاعات');
       } finally {
         setLoading(false);
@@ -125,7 +66,14 @@ export function GoalsPage() {
               <tr
                 key={item.goal_id}
                 className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors cursor-pointer"
-                onClick={() => navigate(`/goals/${item.goal_id}`)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (title === 'اهداف من') {
+                    navigate(`/goals/${item.goal_id}`);
+                  } else {
+                    navigate(`/supervisions/${item.goal_id}`);
+                  }
+                }}
               >
                 <td className="py-4 px-4">{item.goal}</td>
                 <td className="py-4 px-4">{formatAmount(item.value)} تومان</td>
@@ -148,7 +96,11 @@ export function GoalsPage() {
                     className="text-gray-400 hover:text-white transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/goals/${item.goal_id}`);
+                      if (title === 'اهداف من') {
+                        navigate(`/goals/${item.goal_id}`);
+                      } else {
+                        navigate(`/supervisions/${item.goal_id}`);
+                      }
                     }}
                   >
                     <Eye className="w-5 h-5" />

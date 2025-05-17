@@ -47,7 +47,7 @@ export function GoalsPage() {
     <div className="bg-gray-900 rounded-xl p-6">
       <div className="flex items-center gap-3 mb-6">
         {icon}
-        <h2 className="text-xl font-bold">{title}</h2>
+        <h2 className="table-title">{title}</h2>
       </div>
       
       <div className="overflow-x-auto">

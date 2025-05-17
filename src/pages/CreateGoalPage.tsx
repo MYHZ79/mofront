@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft } from 'lucide-react';
+import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact } from 'lucide-react';
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
 import toast from 'react-hot-toast';
@@ -196,7 +196,7 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-4">
             <div>
-<label className="block text-sm font-medium mb-2">عنوان هدف <Clipboard className="inline-block w-4 h-4 ml-1" /></label>
+              <label className="block text-lg font-bold mb-2">عنوان هدف</label>
               <div className="relative">
                 <Target className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
@@ -215,11 +215,12 @@ export function CreateGoalPage() {
               <label className="block text-sm font-medium mb-2">توضیحات (اختیاری)</label>
               <textarea
                 value={goalData.description}
-                onChange={(e) => setGoalData({ ...goalData, description: e.target.value })}
+onChange={(e) => setGoalData({ ...goalData, description: e.target.value.slice(0, 200) })}
                 className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="جزئیات بیشتر درباره هدف خود را وارد کنید"
                 rows={4}
               />
+              <p className="mt-1 text-sm text-gray-400">{goalData.description.length}/200</p>
             </div>
           </div>
         );
@@ -228,7 +229,7 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">تاریخ سررسید</label>
+              <label className="block text-lg font-bold mb-2">تاریخ سررسید</label>
               <div className="relative">
                 <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <DatePicker
@@ -265,7 +266,7 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">مبلغ (تومان)</label>
+              <label className="block text-lg font-bold mb-2">مبلغ (تومان)</label>
               <div className="relative">
                 <DollarSign className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
@@ -296,7 +297,7 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">شماره موبایل ناظر</label>
+              <label className="block text-lg font-bold mb-2">شماره موبایل ناظر</label>
               <div className="relative">
                 <Shield className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input
@@ -382,28 +383,50 @@ export function CreateGoalPage() {
         </button>
 
         <div className="flex items-center justify-center mb-8">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <React.Fragment key={i}>
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                  i + 1 === currentStep
-                    ? 'bg-red-500 text-white'
-                    : i + 1 < currentStep
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-700 text-gray-400'
-                }`}
-              >
-                {i + 1}
-              </div>
-              {i < 4 && (
+{Array.from({ length: 5 }).map((_, i) => {
+            let icon;
+            switch (i + 1) {
+              case 1:
+                icon = <Target className="w-4 h-4" />;
+                break;
+              case 2:
+                icon = <Calendar className="w-4 h-4" />;
+                break;
+              case 3:
+                icon = <DollarSign className="w-4 h-4" />;
+                break;
+              case 4:
+                icon = <Shield className="w-4 h-4" />;
+                break;
+              case 5:
+                icon = <ArrowLeft className="w-4 h-4" />;
+                break;
+              default:
+                icon = i + 1;
+            }
+            return (
+              <React.Fragment key={i}>
                 <div
-                  className={`h-0.5 w-4 ${
-                    i + 1 < currentStep ? 'bg-green-500' : 'bg-gray-700'
+                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    i + 1 === currentStep
+                      ? 'bg-red-500 text-white'
+                      : i + 1 < currentStep
+                      ? 'bg-green-500 text-white'
+                      : 'bg-gray-700 text-gray-400'
                   }`}
-                />
-              )}
-            </React.Fragment>
-          ))}
+                >
+                  {icon}
+                </div>
+                {i < 4 && (
+                  <div
+                    className={`h-0.5 w-4 ${
+                      i + 1 < currentStep ? 'bg-green-500' : 'bg-gray-700'
+                    }`}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
 
         <div className="bg-gray-900 rounded-xl p-6">

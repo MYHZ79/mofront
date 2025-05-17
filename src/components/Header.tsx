@@ -127,14 +127,23 @@ export function Header({ onShowAuth }: HeaderProps) {
                     >
                       <Link
                         to="/profile"
-                        className="block px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors"
+                        className="block px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors flex items-center gap-2"
                       >
+                        <User className="w-4 h-4" />
                         پروفایل
+                      </Link>
+                      <Link
+                        to="/goals"
+                        className="block px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors flex items-center gap-2"
+                      >
+                        <Target className="w-4 h-4" />
+                        اهداف من
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="block w-full text-right px-4 py-2.5 text-sm text-red-500 hover:bg-gray-700/50 transition-colors"
+                        className="block w-full text-right px-4 py-2.5 text-sm text-red-500 hover:bg-gray-700/50 transition-colors flex items-center gap-2"
                       >
+                        <LogIn className="w-4 h-4" />
                         خروج
                       </button>
                     </div>

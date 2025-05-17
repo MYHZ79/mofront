@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact } from 'lucide-react';
+import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact, Check, Clock, Gift } from 'lucide-react';
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
 import toast from 'react-hot-toast';
@@ -25,13 +25,11 @@ interface DayObject {
   day: number;
 }
 
-// Convert Persian date to Gregorian
 const toGregorianDate = (day: DayObject): Date => {
   const jalaliDate = jalali.from(`${day.year}-${day.month}-${day.day}`, 'fa','YYYY/MM/DD');
   return jalaliDate.toDate();
 };
 
-// Convert Gregorian date to Persian
 const toPersianDate = (date: Date): DayObject => {
   const jalaliDate = jalali(date);
   return {
@@ -41,7 +39,6 @@ const toPersianDate = (date: Date): DayObject => {
   };
 };
 
-// Get minimum and maximum dates in Persian calendar
 const getMinMaxDates = () => {
   const today = new Date();
   const minDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.MIN_DAYS * 24 * 60 * 60 * 1000));
@@ -53,7 +50,6 @@ const getMinMaxDates = () => {
   };
 };
 
-// Get default date (3 days from now)
 const getDefaultDate = (): DayObject => {
   const date = new Date();
   date.setDate(date.getDate() + 3);
@@ -137,7 +133,6 @@ export function CreateGoalPage() {
   };
 
   const handleAmountChange = (value: string) => {
-    // Remove non-numeric characters
     const numericValue = value.replace(/[^0-9]/g, '');
     setAmountInput(numericValue);
 
@@ -190,6 +185,96 @@ export function CreateGoalPage() {
     }
   };
 
+  const renderTimeline = () => {
+    const deadlineDate = new Date(goalData.deadline);
+    const supervisorCheckDate = new Date(deadlineDate.getTime() - (24 * 60 * 60 * 1000));
+
+    return (
+      <div className="space-y-8">
+        <div className="relative">
+          <div className="absolute left-8 top-0 h-full w-0.5 bg-gray-800"></div>
+          
+          <div className="relative flex items-start mb-8">
+            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-red-500"></div>
+            <div className="mr-12">
+              <div className="flex items-center gap-2 text-red-500 mb-2">
+                <Target className="w-5 h-5" />
+                <h3 className="font-bold">ثبت هدف</h3>
+              </div>
+              <p className="text-gray-400">شما هدف «{goalData.title}» را با مبلغ {formatAmount(parseInt(amountInput))} تومان ثبت کردید.</p>
+            </div>
+          </div>
+
+          <div className="relative flex items-start mb-8">
+            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-red-500"></div>
+            <div className="mr-12">
+              <div className="flex items-center gap-2 text-red-500 mb-2">
+                <DollarSign className="w-5 h-5" />
+                <h3 className="font-bold">پرداخت مبلغ</h3>
+              </div>
+              <p className="text-gray-400">پس از پرداخت، مبلغ {formatAmount(parseInt(amountInput))} تومان به صورت امانت نزد موتیو نگهداری می‌شود.</p>
+            </div>
+          </div>
+
+          <div className="relative flex items-start mb-8">
+            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-red-500"></div>
+            <div className="mr-12">
+              <div className="flex items-center gap-2 text-red-500 mb-2">
+                <Shield className="w-5 h-5" />
+                <h3 className="font-bold">تعیین ناظر</h3>
+              </div>
+              <p className="text-gray-400">ناظر شما با شماره {goalData.supervisor} مسئول تایید انجام هدف خواهد بود.</p>
+            </div>
+          </div>
+
+          <div className="relative flex items-start mb-8">
+            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-yellow-500"></div>
+            <div className="mr-12">
+              <div className="flex items-center gap-2 text-yellow-500 mb-2">
+                <Clock className="w-5 h-5" />
+                <h3 className="font-bold">اطلاع‌رسانی به ناظر</h3>
+              </div>
+              <p className="text-gray-400">در تاریخ {supervisorCheckDate.toLocaleDateString('fa-IR')}، یک روز قبل از موعد، پیامکی برای ناظر ارسال خواهد شد.</p>
+            </div>
+          </div>
+
+          <div className="relative flex items-start mb-8">
+            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-green-500"></div>
+            <div className="mr-12">
+              <div className="flex items-center gap-2 text-green-500 mb-2">
+                <Calendar className="w-5 h-5" />
+                <h3 className="font-bold">موعد هدف</h3>
+              </div>
+              <p className="text-gray-400">در تاریخ {deadlineDate.toLocaleDateString('fa-IR')} ناظر باید انجام هدف را تایید کند.</p>
+            </div>
+          </div>
+
+          <div className="relative flex items-start">
+            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-500"></div>
+            <div className="mr-12">
+              <div className="flex items-center gap-2 text-blue-500 mb-2">
+                <Gift className="w-5 h-5" />
+                <h3 className="font-bold">نتیجه</h3>
+              </div>
+              <div className="space-y-2">
+                <p className="text-gray-400">در صورت تایید ناظر: مبلغ {formatAmount(parseInt(amountInput))} تومان به شما بازگردانده می‌شود.</p>
+                <p className="text-gray-400">در صورت عدم تایید یا عدم پاسخ ناظر: مبلغ به خیریه اهدا خواهد شد.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-red-500 text-white py-4 rounded-lg font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2 mt-8"
+        >
+          پرداخت و شروع چالش
+          <DollarSign className="w-5 h-5" />
+        </button>
+      </div>
+    );
+  };
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -215,7 +300,7 @@ export function CreateGoalPage() {
               <label className="block text-sm font-medium mb-2">توضیحات (اختیاری)</label>
               <textarea
                 value={goalData.description}
-onChange={(e) => setGoalData({ ...goalData, description: e.target.value.slice(0, 200) })}
+                onChange={(e) => setGoalData({ ...goalData, description: e.target.value.slice(0, 200) })}
                 className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="جزئیات بیشتر درباره هدف خود را وارد کنید"
                 rows={4}
@@ -333,39 +418,9 @@ onChange={(e) => setGoalData({ ...goalData, description: e.target.value.slice(0,
         return (
           <div className="space-y-6">
             <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <h3 className="text-xl font-bold mb-4">خلاصه هدف</h3>
-              <dl className="space-y-4">
-                <div>
-                  <dt className="text-sm text-gray-400">عنوان هدف</dt>
-                  <dd className="mt-1 text-lg">{goalData.title}</dd>
-                </div>
-                {goalData.description && (
-                  <div>
-                    <dt className="text-sm text-gray-400">توضیحات</dt>
-                    <dd className="mt-1">{goalData.description}</dd>
-                  </div>
-                )}
-                <div>
-                  <dt className="text-sm text-gray-400">تاریخ سررسید</dt>
-                  <dd className="mt-1">{new Date(goalData.deadline).toLocaleDateString('fa-IR')}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm text-gray-400">مبلغ</dt>
-                  <dd className="mt-1">{goalData.amount} تومان</dd>
-                </div>
-                <div>
-                  <dt className="text-sm text-gray-400">شماره موبایل ناظر</dt>
-                  <dd className="mt-1 font-mono">{goalData.supervisor}</dd>
-                </div>
-              </dl>
+              <h3 className="text-xl font-bold mb-6">مراحل انجام هدف</h3>
+              {renderTimeline()}
             </div>
-            <button
-              onClick={handleSubmit}
-              className="w-full bg-red-500 text-white py-3 rounded-lg font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
-            >
-              پرداخت و شروع چالش
-              <DollarSign className="w-5 h-5" />
-            </button>
           </div>
         );
     }
@@ -383,7 +438,7 @@ onChange={(e) => setGoalData({ ...goalData, description: e.target.value.slice(0,
         </button>
 
         <div className="flex items-center justify-center mb-8">
-{Array.from({ length: 5 }).map((_, i) => {
+          {Array.from({ length: 5 }).map((_, i) => {
             let icon;
             switch (i + 1) {
               case 1:

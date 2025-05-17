@@ -192,13 +192,12 @@ export function CreateGoalPage() {
     return (
       <div className="space-y-8">
         <div className="relative">
-          <div className="absolute left-8 top-0 h-full w-0.5 bg-gray-800"></div>
+          <div className="absolute -translate-x-1/2 right-3 top-0 h-full w-0.5 bg-gray-800"></div>
           
           <div className="relative flex items-start mb-8">
-            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-red-500"></div>
-            <div className="mr-12">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/20 text-red-500"><Target className="w-5 h-5" /></div>
+            <div className="mr-3 text-right">
               <div className="flex items-center gap-2 text-red-500 mb-2">
-                <Target className="w-5 h-5" />
                 <h3 className="font-bold">ثبت هدف</h3>
               </div>
               <p className="text-gray-400">شما هدف «{goalData.title}» را با مبلغ {formatAmount(parseInt(amountInput))} تومان ثبت کردید.</p>
@@ -206,10 +205,9 @@ export function CreateGoalPage() {
           </div>
 
           <div className="relative flex items-start mb-8">
-            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-red-500"></div>
-            <div className="mr-12">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/20 text-red-500"><DollarSign className="w-5 h-5" /></div>
+            <div className="mr-3 text-right">
               <div className="flex items-center gap-2 text-red-500 mb-2">
-                <DollarSign className="w-5 h-5" />
                 <h3 className="font-bold">پرداخت مبلغ</h3>
               </div>
               <p className="text-gray-400">پس از پرداخت، مبلغ {formatAmount(parseInt(amountInput))} تومان به صورت امانت نزد موتیو نگهداری می‌شود.</p>
@@ -217,10 +215,10 @@ export function CreateGoalPage() {
           </div>
 
           <div className="relative flex items-start mb-8">
-            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-red-500"></div>
-            <div className="mr-12">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-red-500/20 text-red-500"><Shield className="w-5 h-5" /></div>
+            <div className="mr-3 text-right">
               <div className="flex items-center gap-2 text-red-500 mb-2">
-                <Shield className="w-5 h-5" />
+        
                 <h3 className="font-bold">تعیین ناظر</h3>
               </div>
               <p className="text-gray-400">ناظر شما با شماره {goalData.supervisor} مسئول تایید انجام هدف خواهد بود.</p>
@@ -228,10 +226,10 @@ export function CreateGoalPage() {
           </div>
 
           <div className="relative flex items-start mb-8">
-            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-yellow-500"></div>
-            <div className="mr-12">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-yellow-500/20 text-yellow-500"><Clock className="w-5 h-5" /></div>
+            <div className="mr-3 text-right">
               <div className="flex items-center gap-2 text-yellow-500 mb-2">
-                <Clock className="w-5 h-5" />
+                
                 <h3 className="font-bold">اطلاع‌رسانی به ناظر</h3>
               </div>
               <p className="text-gray-400">در تاریخ {supervisorCheckDate.toLocaleDateString('fa-IR')}، یک روز قبل از موعد، پیامکی برای ناظر ارسال خواهد شد.</p>
@@ -239,10 +237,10 @@ export function CreateGoalPage() {
           </div>
 
           <div className="relative flex items-start mb-8">
-            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-green-500"></div>
-            <div className="mr-12">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-green-500/20 text-green-500"><Calendar className="w-5 h-5" /></div>
+            <div className="mr-3 text-right">
               <div className="flex items-center gap-2 text-green-500 mb-2">
-                <Calendar className="w-5 h-5" />
+            
                 <h3 className="font-bold">موعد هدف</h3>
               </div>
               <p className="text-gray-400">در تاریخ {deadlineDate.toLocaleDateString('fa-IR')} ناظر باید انجام هدف را تایید کند.</p>
@@ -250,10 +248,10 @@ export function CreateGoalPage() {
           </div>
 
           <div className="relative flex items-start">
-            <div className="absolute left-8 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-500"></div>
-            <div className="mr-12">
+            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-500/20 text-blue-500"><Gift className="w-5 h-5" /></div>
+            <div className="mr-3 text-right">
               <div className="flex items-center gap-2 text-blue-500 mb-2">
-                <Gift className="w-5 h-5" />
+               
                 <h3 className="font-bold">نتیجه</h3>
               </div>
               <div className="space-y-2">
@@ -416,9 +414,9 @@ export function CreateGoalPage() {
 
       case 5:
         return (
-          <div className="space-y-6">
-            <div className="bg-white/5 rounded-lg p-6 border border-white/10">
-              <h3 className="text-xl font-bold mb-6">مراحل انجام هدف</h3>
+          <div className="space-y-1">
+            <div className="bg-white/5 rounded-lg p-4 border border-white/10 text-center">
+              <h3 className="text-xl font-bold mb-6 mt-6">مراحل انجام هدف</h3>
               {renderTimeline()}
             </div>
           </div>

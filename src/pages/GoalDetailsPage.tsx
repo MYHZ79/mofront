@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
+import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Share2, MessageCircle } from 'lucide-react';
+import { TwitterShareButton, TelegramShareButton, WhatsappShareButton, LinkedinShareButton } from 'react-share';
 import toast from 'react-hot-toast';
 import { Goal } from '../types/goal';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
-
-// Test data
-const testGoal: Goal | null = null;
+import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
+import { fa } from 'date-fns/locale';
 
 export function GoalDetailsPage() {
   const { id } = useParams();
@@ -16,6 +16,9 @@ export function GoalDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [isSupervisor, setIsSupervisor] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [countdown, setCountdown] = useState('');
+  const shareUrl = window.location.href;
+  const shareTitle = goal ? `هدف من در موتیو: ${goal.goal}` : '';
 
   useEffect(() => {
     const fetchGoal = async () => {
@@ -23,7 +26,6 @@ export function GoalDetailsPage() {
         const response = await api.goals.view(parseInt(id!));
         if (response.ok && response.data) {
           setGoal(response.data);
-          // Check if current user is supervisor (otherwise they are owner)
           const userPhone = localStorage.getItem('userPhone');
           if (userPhone) {
             setIsSupervisor(response.data.supervisor_phone_number === userPhone);
@@ -46,26 +48,43 @@ export function GoalDetailsPage() {
     fetchGoal();
   }, [id]);
 
+  useEffect(() => {
+    if (!goal || goal.done) return;
+
+    const updateCountdown = () => {
+      const now = Math.floor(Date.now() / 1000);
+      const remaining = goal.deadline - now;
+      
+      if (remaining <= 0) {
+        setCountdown('زمان به پایان رسیده');
+        return;
+      }
+      
+      const days = Math.floor(remaining / (24 * 60 * 60));
+      const hours = Math.floor((remaining % (24 * 60 * 60)) / (60 * 60));
+      const minutes = Math.floor((remaining % (60 * 60)) / 60);
+      const seconds = remaining % 60;
+      
+      setCountdown(`${days} روز ${hours} ساعت ${minutes} دقیقه ${seconds} ثانیه`);
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [goal]);
+
   const handleSupervision = async (approve: boolean) => {
     try {
-      // Implement supervision API call here
-      toast.success(approve ? 'هدف با موفقیت تایید شد' : 'هدف رد شد');
+      const response = await api.goals.supervise(parseInt(id!), approve);
+      if (response.ok) {
+        toast.success(approve ? 'هدف با موفقیت تایید شد' : 'هدف رد شد');
+        navigate('/goals');
+      } else {
+        toast.error(response.error || 'خطا در ثبت نظارت');
+      }
     } catch (error) {
       toast.error('خطا در ثبت نظارت');
     }
-  };
-
-  const getRemainingTime = () => {
-    if (!goal) return '';
-    const now = Math.floor(Date.now() / 1000);
-    const remaining = goal.deadline - now;
-    
-    if (remaining <= 0) return 'زمان به پایان رسیده';
-    
-    const days = Math.floor(remaining / (24 * 60 * 60));
-    const hours = Math.floor((remaining % (24 * 60 * 60)) / (60 * 60));
-    
-    return `${days} روز و ${hours} ساعت باقی مانده`;
   };
 
   if (loading) {
@@ -105,17 +124,40 @@ export function GoalDetailsPage() {
         </button>
 
         <div className="bg-gray-900 rounded-xl p-6 md:p-8 space-y-8">
-          <div className="flex items-center gap-4 pb-6 border-b border-gray-800">
-            <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
-              <Target className="w-6 h-6 text-red-500" />
+          <div className="flex items-center justify-between pb-6 border-b border-gray-800">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
+                <Target className="w-6 h-6 text-red-500" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">{goal.goal}</h1>
+                {goal.description && (
+                  <p className="text-gray-400 mt-1">{goal.description}</p>
+                )}
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold">{goal.goal}</h1>
-              {goal.description && (
-                <p className="text-gray-400 mt-1">{goal.description}</p>
-              )}
+            
+            <div className="flex items-center gap-2">
+              <TelegramShareButton url={shareUrl} title={shareTitle}>
+                <button className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center hover:bg-blue-500/20 transition-colors">
+                  <Share2 className="w-5 h-5 text-blue-500" />
+                </button>
+              </TelegramShareButton>
+              <WhatsappShareButton url={shareUrl} title={shareTitle}>
+                <button className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center hover:bg-green-500/20 transition-colors">
+                  <Share2 className="w-5 h-5 text-green-500" />
+                </button>
+              </WhatsappShareButton>
             </div>
           </div>
+
+          {!goal.done && countdown && (
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-6 text-center">
+              <Clock className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
+              <p className="text-2xl font-bold text-yellow-500">{countdown}</p>
+              <p className="text-yellow-200 mt-2">تا پایان مهلت</p>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
@@ -140,7 +182,7 @@ export function GoalDetailsPage() {
                 <div>
                   <p className="text-sm text-gray-400">وضعیت</p>
                   <p className={goal.done ? 'text-green-500' : 'text-yellow-500'}>
-                    {goal.done ? 'تکمیل شده' : getRemainingTime()}
+                    {goal.done ? 'تکمیل شده' : 'در حال انجام'}
                   </p>
                 </div>
               </div>
@@ -173,6 +215,35 @@ export function GoalDetailsPage() {
             </div>
           </div>
 
+          {goal.supervised_at && (
+            <div className="bg-gray-800/50 rounded-lg p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <MessageCircle className="w-5 h-5 text-gray-400" />
+                <h3 className="text-lg font-bold">نتیجه نظارت</h3>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <div className={`w-3 h-3 rounded-full ${goal.done ? 'bg-green-500' : 'bg-red-500'}`} />
+                <p>{goal.done ? 'هدف تایید شده' : 'هدف رد شده'}</p>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <Clock className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-sm text-gray-400">زمان نظارت</p>
+                  <p>{new Date(goal.supervised_at * 1000).toLocaleDateString('fa-IR')}</p>
+                </div>
+              </div>
+              
+              {goal.supervisor_description && (
+                <div className="mt-4 p-4 bg-gray-900 rounded-lg">
+                  <p className="text-sm text-gray-400">توضیحات ناظر:</p>
+                  <p className="mt-2">{goal.supervisor_description}</p>
+                </div>
+              )}
+            </div>
+          )}
+
           {isSupervisor && !goal.done && (
             <div className="pt-6 border-t border-gray-800">
               <p className="text-lg font-medium mb-4">تایید یا رد هدف</p>
@@ -191,17 +262,6 @@ export function GoalDetailsPage() {
                   <XCircle className="w-5 h-5" />
                   رد هدف
                 </button>
-              </div>
-            </div>
-          )}
-
-          {isOwner && !goal.done && (
-            <div className="pt-6 border-t border-gray-800">
-              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
-                <p className="text-yellow-200">
-                  <Clock className="w-5 h-5 inline-block mr-2" />
-                  {getRemainingTime()}
-                </p>
               </div>
             </div>
           )}

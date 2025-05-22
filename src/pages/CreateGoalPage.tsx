@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact, Check, Clock, Gift } from 'lucide-react';
+import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact, Check, Clock, Gift, ListTodo } from 'lucide-react';
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
 import toast from 'react-hot-toast';
@@ -298,12 +298,12 @@ export function CreateGoalPage() {
               <label className="block text-sm font-medium mb-2">توضیحات (اختیاری)</label>
               <textarea
                 value={goalData.description}
-                onChange={(e) => setGoalData({ ...goalData, description: e.target.value.slice(0, 200) })}
+                onChange={(e) => setGoalData({ ...goalData, description: e.target.value.slice(0, 250) })}
                 className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
                 placeholder="جزئیات بیشتر درباره هدف خود را وارد کنید"
                 rows={4}
               />
-              <p className="mt-1 text-sm text-gray-400">{goalData.description.length}/200</p>
+              <p className="mt-1 text-sm text-gray-400">{goalData.description.length}/250</p>
             </div>
           </div>
         );
@@ -416,7 +416,9 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-1">
             <div className="bg-white/5 rounded-lg p-4 border border-white/10 text-center">
-              <h3 className="text-xl font-bold mb-6 mt-6">مراحل انجام هدف</h3>
+              <div className="flex justify-center">
+                <h3 className="text-xl font-bold mb-6 mt-6 flex"><ListTodo className="text-yellow-500 ml-1 flex" />مراحل انجام هدف</h3>
+              </div>
               {renderTimeline()}
             </div>
           </div>

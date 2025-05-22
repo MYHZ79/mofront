@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 
-const API_BASE_URL = 'https://imotiv.ir/api';
+const API_BASE_URL = 'https://imotiv.ir/apidev';
 
 interface ApiResponse<T> {
   ok: boolean;

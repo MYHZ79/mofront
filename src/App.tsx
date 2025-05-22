@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Target, Heart, DollarSign, AlertCircle, Shield } from 'lucide-react';
 import { AuthModal } from './components/AuthModal';
 import { Header } from './components/Header';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import { CreateGoalPage } from './pages/CreateGoalPage';
 import { GoalsPage } from './pages/GoalsPage';
 import { GoalDetailsPage } from './pages/GoalDetailsPage';
@@ -16,6 +16,8 @@ import { CONFIG } from './config/constants';
 
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { isAuthenticated } = useAuthContext();
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [goalTitle, setGoalTitle] = React.useState('');
@@ -42,6 +44,13 @@ function App() {
     fetchConfig();
   }, []);
 
+  useEffect(() => {
+    if (!isAuthenticated && location.pathname !== '/') {
+      setShowAuthModal(true);
+      navigate(`/?redirect=${location.pathname}${location.search}`);
+    }
+  }, [isAuthenticated, navigate, location]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -52,9 +61,16 @@ function App() {
     }
   };
 
-  const handleAuthSuccess = () => {
+ const handleAuthSuccess = () => {
+    console.log("this is handle auth success");
     setShowAuthModal(false);
-    navigate('/create-goal', { state: { goalTitle } });
+    const redirect = searchParams.get('redirect');
+    console.log("redirect:", redirect);
+    if (redirect){
+      navigate(redirect || '/', { state: { goalTitle }});
+    } else {
+      navigate(goalTitle ? '/create-goal' : '/', { state: { goalTitle }});
+    }
   };
 
   return (
@@ -196,7 +212,7 @@ function App() {
                   به هزاران نفری بپیوند که با تعهد به هدفشون و نظارت یک فرد معتمد، یا موفق شدن یا به خیریه کمک کردن.
                 </p>
                 <button
-                onClick={() => !isAuthenticated && setShowAuthModal(true)} 
+                onClick={handleSubmit} 
                 className="px-8 py-4 bg-black rounded-lg font-bold hover:bg-gray-900 transition-colors flex items-center gap-2 mx-auto">
                   {isAuthenticated ? 'ثبت هدف جدید' : 'همین حالا شروع کن'}
                   <ArrowLeft className="w-5 h-5" />

@@ -32,11 +32,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
       if (success) {
         toast.success('ورود با موفقیت انجام شد');
         onClose();
-        if (goalTitle) {
-          onSuccess();
-        } else {
-          navigate('/');
-        }
+        onSuccess();
       }
     } catch (error) {
       toast.error('خطا در ورود به حساب کاربری');
@@ -71,11 +67,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
       if (success) {
         toast.success('ورود با موفقیت انجام شد');
         onClose();
-        if (goalTitle) {
-          onSuccess();
-        } else {
-          navigate('/goals');
-        }
+        onSuccess();
       }
     } catch (error) {
       toast.error('کد وارد شده صحیح نیست');
@@ -95,7 +87,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
           <X className="w-6 h-6" />
         </button>
         
-        <h2 className="text-2xl font-bold mb-6 text-center">ورود به حساب کاربری</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-700">ورود به حساب کاربری</h2>
         
         <div className="flex gap-4 mb-6">
           <button

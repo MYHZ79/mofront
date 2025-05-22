@@ -232,7 +232,6 @@ function App() {
             </footer>
           </div>
         } />
-          <Route path="/supervisions/:id" element={<SupervisionPage />} />
       </Routes>
       </main>
     </div>

@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../config/api';
 import { formatAmount } from '../config/constants';
+import { GetPaymentRequest, GetPaymentResponse } from '../types/api';
 
-interface PaymentStatus {
-  goal_id: number;
-  amount: number;
-  pgp_name: string;
-  tracing_code: string;
-}
 
 export function PaymentStatusPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(null);
+  const [paymentStatus, setPaymentStatus] = useState<GetPaymentResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const hasFetchedStatus = useRef(false);
 
   useEffect(() => {
     const paymentId = searchParams.get('payment_id');
+    if (hasFetchedStatus.current) return;
+    hasFetchedStatus.current = true;
+
     if (!paymentId) {
       setError('شناسه پرداخت یافت نشد');
       setLoading(false);
@@ -29,7 +28,7 @@ export function PaymentStatusPage() {
 
     const checkPaymentStatus = async () => {
       try {
-        const response = await api.payments.getStatus(parseInt(paymentId));
+        const response = await api.payments.getStatus({ payment_id: parseInt(paymentId) } as GetPaymentRequest);
         if (response.ok && response.data) {
           setPaymentStatus(response.data);
         } else {
@@ -104,7 +103,11 @@ export function PaymentStatusPage() {
         
         <div className="flex flex-col gap-4">
           <button
-            onClick={() => navigate(`/goals/${paymentStatus.goal_id}`)}
+            onClick={() => {
+              if (paymentStatus.goal_id !== undefined) {
+                navigate(`/goals/${paymentStatus.goal_id}`);
+              }
+            }}
             className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-600 transition-colors"
           >
             مشاهده جزئیات هدف

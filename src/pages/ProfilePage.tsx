@@ -1,23 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { User, Mail, Phone, Calendar, UserCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { User as UserType } from '../types/goal';
+import { GetMeResponse, EditUserRequest, EditPasswordRequest } from '../types/api';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
 
 // Test user data
-const testUser: UserType = {
-  user_id: 1,
-  first_name: "علی",
-  last_name: "محمدی",
-  phone_number: "09123456789",
-  email: "ali@example.com",
-  birth: 631152000, // Example timestamp
-  gender: "M"
-};
+// const testUser: UserType = {
+//   user_id: 1,
+//   first_name: "علی",
+//   last_name: "محمدی",
+//   phone_number: "09123456789",
+//   email: "ali@example.com",
+//   birth: 631152000, // Example timestamp
+//   gender: "M"
+// };
 
 export function ProfilePage() {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<GetMeResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     first_name: '',
@@ -28,19 +28,23 @@ export function ProfilePage() {
     newPassword: '',
     confirmPassword: '',
   });
+  const hasFetchedUser = useRef(false);
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (hasFetchedUser.current) return;
+      hasFetchedUser.current = true;
+
       try {
         const response = await api.user.getMe();
         if (response.ok && response.data) {
           setUser(response.data);
           setFormData({
             ...formData,
-            first_name: response.data.first_name,
-            last_name: response.data.last_name,
-            phone_number: response.data.phone_number,
-            email: response.data.email,
+            first_name: response.data.first_name || '',
+            last_name: response.data.last_name || '',
+            phone_number: response.data.phone_number || '',
+            email: response.data.email || '',
           });
         } else {
           toast.error(response.error || 'خطا در دریافت اطلاعات کاربر');
@@ -62,7 +66,7 @@ export function ProfilePage() {
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
-      });
+      } as EditUserRequest); // Cast to EditUserRequest
 
       if (response.ok) {
         toast.success('اطلاعات با موفقیت به‌روزرسانی شد');
@@ -82,7 +86,10 @@ export function ProfilePage() {
     }
 
     try {
-      const response = await api.user.editPassword(formData.newPassword, formData.confirmPassword);
+      const response = await api.user.editPassword({
+        password: formData.newPassword,
+        confirmation: formData.confirmPassword,
+      } as EditPasswordRequest); // Pass EditPasswordRequest object
       if (response.ok) {
         toast.success('رمز عبور با موفقیت تغییر کرد');
         setFormData({

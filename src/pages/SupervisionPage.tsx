@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Goal } from '../types/goal';
+import { Goal, ViewGoalRequest, SuperviseGoalRequest, ViewGoalResponse, SuperviseGoalResponse } from '../types/api';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
 
@@ -12,11 +12,15 @@ export function SupervisionPage() {
   const [goal, setGoal] = useState<Goal | null>(null);
   const [loading, setLoading] = useState(true);
   const [supervisionDescription, setSupervisionDescription] = useState('');
+  const hasFetchedGoal = useRef(false);
 
   useEffect(() => {
     const fetchGoal = async () => {
+      if (hasFetchedGoal.current) return;
+      hasFetchedGoal.current = true;
+
       try {
-        const response = await api.goals.view(parseInt(id!));
+        const response = await api.goals.view({ goal_id: parseInt(id!) } as ViewGoalRequest);
         if (response.ok && response.data) {
           setGoal(response.data);
         } else {
@@ -38,7 +42,7 @@ export function SupervisionPage() {
 
   const handleSupervision = async (done: boolean) => {
     try {
-      const response = await api.goals.supervise(parseInt(id!), done, supervisionDescription);
+      const response = await api.goals.supervise({ goal_id: parseInt(id!), done: done, description: supervisionDescription || undefined } as SuperviseGoalRequest);
       if (response.ok) {
         toast.success(done ? 'هدف با موفقیت تایید شد' : 'هدف رد شد');
         navigate('/goals');
@@ -105,7 +109,7 @@ export function SupervisionPage() {
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">تاریخ سررسید</p>
-                  <p>{new Date(goal.deadline * 1000).toLocaleDateString('fa-IR')}</p>
+                  <p>{goal.deadline ? new Date(goal.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'}</p>
                 </div>
               </div>
 
@@ -113,7 +117,7 @@ export function SupervisionPage() {
                 <DollarSign className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">مبلغ</p>
-                  <p>{formatAmount(goal.value)} تومان</p>
+                  <p>{goal.value !== undefined ? formatAmount(goal.value) : 'N/A'} تومان</p>
                 </div>
               </div>
 
@@ -141,7 +145,7 @@ export function SupervisionPage() {
                 <Phone className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">شماره تماس</p>
-                  <p dir="ltr">{goal.creator_phone_number}</p>
+                  <p dir="ltr">{goal.phone_number}</p>
                 </div>
               </div>
 
@@ -149,7 +153,7 @@ export function SupervisionPage() {
                 <Mail className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">ایمیل</p>
-                  <p dir="ltr">{goal.creator_email}</p>
+                  <p dir="ltr">{goal.email}</p>
                 </div>
               </div>
             </div>

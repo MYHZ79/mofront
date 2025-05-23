@@ -8,6 +8,7 @@ import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToP
 import { api } from '../config/api';
 import jalali from 'jalali-moment';
 import { useAuthContext } from '../context/AuthContext';
+import { SetGoalRequest } from '../types/api';
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -172,7 +173,7 @@ export function CreateGoalPage() {
         value: parseInt(amountInput),
         deadline: Math.floor(new Date(goalData.deadline).getTime() / 1000),
         supervisor_phone_number: goalData.supervisor
-      });
+      } as SetGoalRequest); // Pass SetGoalRequest object
 
       if (response.ok && response.data?.payment_url) {
         window.location.href = response.data.payment_url;

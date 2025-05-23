@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Target, Eye, Calendar, DollarSign, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { Goal } from '../types/goal';
+import { Goal, GetGoalsRequest, GetSupervisionsRequest } from '../types/api';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
 
@@ -13,13 +13,18 @@ export function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [supervisions, setSupervisions] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
+  const hasFetched = useRef(false);
 
   useEffect(() => {
     const fetchData = async () => {
+
+      if (hasFetched.current) return;
+      hasFetched.current = true;
+
       try {
         const [goalsResponse, supervisionsResponse] = await Promise.all([
-          api.goals.getAll(0),
-          api.goals.getSupervisions(0)
+          api.goals.getAll({ page: 0 } as GetGoalsRequest),
+          api.goals.getSupervisions({ page: 0 } as GetSupervisionsRequest)
         ]);
 
         if (goalsResponse.ok && goalsResponse.data?.goals) {
@@ -46,7 +51,9 @@ export function GoalsPage() {
   const renderTable = (data: Goal[], title: string, icon: React.ReactNode) => (
     <div className="bg-gray-900 rounded-xl p-6">
       <div className="flex items-center gap-3 mb-6">
-        {icon}
+        <div className='w-12 h-12 bg-gray-300/10 rounded-full flex items-center justify-center'>
+          {icon}
+        </div>
         <h2 className="table-title">{title}</h2>
       </div>
       
@@ -68,17 +75,19 @@ export function GoalsPage() {
                 className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (title === 'اهداف من') {
-                    navigate(`/goals/${item.goal_id}`);
-                  } else {
-                    navigate(`/supervisions/${item.goal_id}`);
+                  if (item.goal_id !== undefined) {
+                    if (title === 'اهداف من') {
+                      navigate(`/goals/${item.goal_id}`);
+                    } else {
+                      navigate(`/supervisions/${item.goal_id}`);
+                    }
                   }
                 }}
               >
                 <td className="py-4 px-4">{item.goal}</td>
                 <td className="py-4 px-4">{formatAmount(item.value)} تومان</td>
                 <td className="py-4 px-4">
-                  {new Date(item.deadline * 1000).toLocaleDateString('fa-IR')}
+                  {item.deadline ? new Date(item.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'}
                 </td>
                 <td className="py-4 px-4">
                   <span
@@ -96,10 +105,12 @@ export function GoalsPage() {
                     className="text-gray-400 hover:text-white transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (title === 'اهداف من') {
-                        navigate(`/goals/${item.goal_id}`);
-                      } else {
-                        navigate(`/supervisions/${item.goal_id}`);
+                       if (item.goal_id !== undefined) {
+                        if (title === 'اهداف من') {
+                          navigate(`/goals/${item.goal_id}`);
+                        } else {
+                          navigate(`/supervisions/${item.goal_id}`);
+                        }
                       }
                     }}
                   >

@@ -1,29 +1,33 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Share2, MessageCircle } from 'lucide-react';
-import { TwitterShareButton, TelegramShareButton, WhatsappShareButton, LinkedinShareButton } from 'react-share';
+import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, MessageCircle, ArrowRight, Shield } from 'lucide-react';
+import { TwitterShareButton,TwitterIcon, TelegramShareButton,TelegramIcon, WhatsappShareButton,WhatsappIcon, LinkedinShareButton,LinkedinIcon } from 'react-share';
 import toast from 'react-hot-toast';
-import { Goal } from '../types/goal';
+import { Goal, ViewGoalRequest, SuperviseGoalRequest, ViewGoalResponse, SuperviseGoalResponse } from '../types/api';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
 import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
-import { fa } from 'date-fns/locale';
 
 export function GoalDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [goal, setGoal] = useState<Goal | null>(null);
   const [loading, setLoading] = useState(true);
+  const [remaining, setRemaining] = useState(0);
   const [isSupervisor, setIsSupervisor] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [countdown, setCountdown] = useState('');
   const shareUrl = window.location.href;
   const shareTitle = goal ? `هدف من در موتیو: ${goal.goal}` : '';
+  const hasFetchedGoal = useRef(false);
 
   useEffect(() => {
     const fetchGoal = async () => {
+      if (hasFetchedGoal.current) return;
+      hasFetchedGoal.current = true;
+
       try {
-        const response = await api.goals.view(parseInt(id!));
+        const response = await api.goals.view({ goal_id: parseInt(id!) } as ViewGoalRequest);
         if (response.ok && response.data) {
           setGoal(response.data);
           const userPhone = localStorage.getItem('userPhone');
@@ -49,23 +53,40 @@ export function GoalDetailsPage() {
   }, [id]);
 
   useEffect(() => {
-    if (!goal || goal.done) return;
+    if (!goal || goal.done || goal.supervised_at || goal.deadline === undefined) return;
 
     const updateCountdown = () => {
       const now = Math.floor(Date.now() / 1000);
-      const remaining = goal.deadline - now;
-      
-      if (remaining <= 0) {
-        setCountdown('زمان به پایان رسیده');
-        return;
+      if (goal.deadline != undefined){
+        const remaining = goal.deadline - now;
+        setRemaining(remaining)
+
+        if (remaining <= 0) {
+          setCountdown('زمان به پایان رسیده');
+          return;
+        }
+        
+        const days = Math.floor(remaining / (24 * 60 * 60));
+        const hours = Math.floor((remaining % (24 * 60 * 60)) / (60 * 60));
+        const minutes = Math.floor((remaining % (60 * 60)) / 60);
+        const seconds = remaining % 60;
+
+        let countdownString = '';
+        if (days > 0) {
+          countdownString += `${days} روز `;
+        }
+        if (hours > 0) {
+          countdownString += `${hours} ساعت `;
+        }
+        if (minutes > 0) {
+          countdownString += `${minutes} دقیقه `;
+        }
+        if (seconds > 0) {
+          countdownString += `${seconds} ثانیه`;
+        }
+
+        setCountdown(countdownString.trim());
       }
-      
-      const days = Math.floor(remaining / (24 * 60 * 60));
-      const hours = Math.floor((remaining % (24 * 60 * 60)) / (60 * 60));
-      const minutes = Math.floor((remaining % (60 * 60)) / 60);
-      const seconds = remaining % 60;
-      
-      setCountdown(`${days} روز ${hours} ساعت ${minutes} دقیقه ${seconds} ثانیه`);
     };
 
     updateCountdown();
@@ -75,7 +96,7 @@ export function GoalDetailsPage() {
 
   const handleSupervision = async (approve: boolean) => {
     try {
-      const response = await api.goals.supervise(parseInt(id!), approve);
+      const response = await api.goals.supervise({ goal_id: parseInt(id!), done: approve } as SuperviseGoalRequest);
       if (response.ok) {
         toast.success(approve ? 'هدف با موفقیت تایید شد' : 'هدف رد شد');
         navigate('/goals');
@@ -119,7 +140,7 @@ export function GoalDetailsPage() {
           onClick={() => navigate('/goals')}
           className="flex items-center gap-2 text-gray-400 hover:text-white mb-8"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowRight className="w-5 h-5" />
           بازگشت به لیست اهداف
         </button>
 
@@ -131,31 +152,41 @@ export function GoalDetailsPage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold">{goal.goal}</h1>
-                {goal.description && (
-                  <p className="text-gray-400 mt-1">{goal.description}</p>
-                )}
               </div>
             </div>
             
             <div className="flex items-center gap-2">
+              <TwitterShareButton url={shareUrl} title={shareTitle}>
+                <button className="w-10 h-10 bg-blue-400/20 rounded-lg flex items-center justify-center hover:bg-blue-400/40 transition-colors">
+                  <TwitterIcon size={30} bgStyle={{fill:'none'}}/>
+                </button>
+              </TwitterShareButton>
+              <LinkedinShareButton url={shareUrl} title={shareTitle}>
+                <button className="w-10 h-10 bg-blue-700/20 rounded-lg flex items-center justify-center hover:bg-blue-700/40 transition-colors">
+                  <LinkedinIcon size={30} bgStyle={{fill:'none'}}/>
+                </button>
+              </LinkedinShareButton>
               <TelegramShareButton url={shareUrl} title={shareTitle}>
-                <button className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center hover:bg-blue-500/20 transition-colors">
-                  <Share2 className="w-5 h-5 text-blue-500" />
+                <button className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center hover:bg-blue-500/40 transition-colors">
+                  <TelegramIcon size={30} bgStyle={{fill:'none'}}/>
                 </button>
               </TelegramShareButton>
-              <WhatsappShareButton url={shareUrl} title={shareTitle}>
-                <button className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center hover:bg-green-500/20 transition-colors">
-                  <Share2 className="w-5 h-5 text-green-500" />
+              <WhatsappShareButton  url={shareUrl} title={shareTitle}>
+                <button className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center hover:bg-green-500/40 transition-colors">
+                  <WhatsappIcon size={30} bgStyle={{fill:'none'}}/>
                 </button>
               </WhatsappShareButton>
             </div>
           </div>
 
-          {!goal.done && countdown && (
-            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-6 text-center">
-              <Clock className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
-              <p className="text-2xl font-bold text-yellow-500">{countdown}</p>
-              <p className="text-yellow-200 mt-2">تا پایان مهلت</p>
+          {goal.description && (
+            <div className="flex gap-3">
+              <div className="flex-shrink-0 mt-2">
+                <Quote className="w-5 h-5 text-gray-400" />
+              </div>
+              <div>
+                <p className="text-gray-400 mt-1">{goal.description}</p>
+              </div>
             </div>
           )}
 
@@ -165,7 +196,7 @@ export function GoalDetailsPage() {
                 <Calendar className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">تاریخ سررسید</p>
-                  <p>{new Date(goal.deadline * 1000).toLocaleDateString('fa-IR')}</p>
+                  <p>{goal.deadline ? new Date(goal.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'}</p>
                 </div>
               </div>
 
@@ -173,7 +204,7 @@ export function GoalDetailsPage() {
                 <DollarSign className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">مبلغ</p>
-                  <p>{formatAmount(goal.value)} تومان</p>
+                  <p>{goal.value !== undefined ? formatAmount(goal.value) : 'N/A'} تومان</p>
                 </div>
               </div>
 
@@ -181,8 +212,8 @@ export function GoalDetailsPage() {
                 <Clock className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">وضعیت</p>
-                  <p className={goal.done ? 'text-green-500' : 'text-yellow-500'}>
-                    {goal.done ? 'تکمیل شده' : 'در حال انجام'}
+                  <p className={(goal.done || goal.supervised_at || remaining <0) ? 'text-green-500' : 'text-yellow-500'}>
+                    {(goal.done || goal.supervised_at || remaining <0) ? 'به پایان رسیده' : 'در حال انجام'}
                   </p>
                 </div>
               </div>
@@ -201,7 +232,7 @@ export function GoalDetailsPage() {
                 <Phone className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">شماره تماس</p>
-                  <p dir="ltr">{goal.creator_phone_number}</p>
+                  <p dir="ltr">{goal.phone_number}</p>
                 </div>
               </div>
 
@@ -209,40 +240,57 @@ export function GoalDetailsPage() {
                 <Mail className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">ایمیل</p>
-                  <p dir="ltr">{goal.creator_email}</p>
+                  <p dir="ltr">{goal.email}</p>
                 </div>
               </div>
             </div>
           </div>
+{
+  !goal.done && !goal.supervised_at && remaining >= 0 && countdown ? (
+    <div className="bg-yellow-500/10 rounded-lg p-6 text-center">
+      <Clock className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
+      <p className="text-2xl font-bold text-yellow-500">{countdown}</p>
+      {remaining >= 0 && <p className="text-yellow-200 mt-2">تا پایان مهلت</p>}
+    </div>
+  ) : (
+    <div className={`${goal.done ? 'bg-green-800/50' : 'bg-red-800/50'} rounded-lg p-6 space-y-4`}>
+      <div className="flex items-center gap-3">
+        <Shield className="w-5 h-5 text-gray-400" />
+        <h3 className="text-lg font-bold">نتیجه نظارت</h3>
+      </div>
 
-          {goal.supervised_at && (
-            <div className="bg-gray-800/50 rounded-lg p-6 space-y-4">
-              <div className="flex items-center gap-3">
-                <MessageCircle className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-bold">نتیجه نظارت</h3>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${goal.done ? 'bg-green-500' : 'bg-red-500'}`} />
-                <p>{goal.done ? 'هدف تایید شده' : 'هدف رد شده'}</p>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-400">زمان نظارت</p>
-                  <p>{new Date(goal.supervised_at * 1000).toLocaleDateString('fa-IR')}</p>
-                </div>
-              </div>
-              
-              {goal.supervisor_description && (
-                <div className="mt-4 p-4 bg-gray-900 rounded-lg">
-                  <p className="text-sm text-gray-400">توضیحات ناظر:</p>
-                  <p className="mt-2">{goal.supervisor_description}</p>
-                </div>
-              )}
+      {goal.supervised_at ? (
+        <>
+          <div className="flex bg-gray-500/20 rounded-lg p-3 text-center items-center gap-3">
+            <div className={`w-3 h-3 rounded-full ${goal.done ? 'bg-green-500' : 'bg-red-500'}`} />
+            <p>{goal.done ? 'ناظر انجام هدف را تایید کرده است' : 'ناظر انجام هدف را رد کرد'}</p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Clock className="w-5 h-5 text-gray-400" />
+            <div>
+              <p className="text-sm text-gray-400">زمان نظارت</p>
+              <p>{new Date(goal.supervised_at * 1000).toLocaleDateString('fa-IR')}</p>
+            </div>
+          </div>
+
+          {goal.supervisor_description && (
+            <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
+              <p className="text-sm text-gray-400">توضیحات ناظر:</p>
+              <p className="mt-2">{goal.supervisor_description}</p>
             </div>
           )}
+        </>
+      ) : (
+        <div className="flex bg-gray-500/20 rounded-lg p-3 text-center items-center gap-3">
+          <div className="w-3 h-3 rounded-full bg-yellow-500" />
+          <p>هدف نظارت نشده است</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 
           {isSupervisor && !goal.done && (
             <div className="pt-6 border-t border-gray-800">

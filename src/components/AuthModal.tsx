@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { api } from '../config/api';
 import { useAuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { SendCodeRequest } from '../types/api';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -46,7 +47,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await api.auth.sendCode(phone);
+      const response = await api.auth.sendCode({ phone_number: phone } as SendCodeRequest);
       if (response.ok) {
         setOtpSent(true);
         toast.success('کد تایید ارسال شد');

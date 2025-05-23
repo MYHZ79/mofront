@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { api } from '../config/api';
+import { GetMeResponse, AuthRequest } from '../types/api';
 
 export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<GetMeResponse | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -35,9 +36,9 @@ export function useAuth() {
   };
 
   const login = async (phone_number: string, password?: string, code?: string) => {
-    const response = await api.auth.login({ phone_number, password, code });
+    const response = await api.auth.login({ phone_number, password, code } as AuthRequest);
     if (response.ok && response.data) {
-      localStorage.setItem('token', response.data.access_token);
+      localStorage.setItem('token', response.data.access_token || ''); // Handle potential undefined access_token
       await checkAuth();
       return true;
     }

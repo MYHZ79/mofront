@@ -9,6 +9,7 @@ export interface Goal {
   done: boolean;
   created_at: number;
   supervised_at?: number;
+  supervisor_description?: string;
   creator_phone_number: string;
   creator_first_name: string;
   creator_last_name: string;

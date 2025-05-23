@@ -1,4 +1,38 @@
 import toast from 'react-hot-toast';
+import {
+  AuthRequest,
+  AuthResponse,
+  EditPasswordRequest,
+  EditPasswordResponse,
+  EditUserRequest,
+  EditUserResponse,
+  GetConfigResponse,
+  GetGoalsRequest,
+  GetGoalsResponse,
+  GetMeResponse,
+  GetPaymentRequest,
+  GetPaymentResponse,
+  GetSupervisionsRequest,
+  GetSupervisionsResponse,
+  Goal,
+  JudgeGoalRequest,
+  JudgeGoalResponse,
+  RefreshTokenResponse,
+  SendCodeRequest,
+  SendCodeResponse,
+  SetGoalRequest,
+  SetGoalResponse,
+  SuperviseGoalRequest,
+  SuperviseGoalResponse,
+  VerifyPaymentRequest,
+  VerifyPaymentRequestParams,
+  VerifyPaymentResponse,
+  VerifyPaymentResponseParams,
+  ViewGoalRequest,
+  ViewGoalResponse,
+  User,
+  UserDO,
+} from '../types/api';
 
 const API_BASE_URL = 'https://imotiv.ir/apidev';
 
@@ -38,142 +72,89 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
   }
 }
 
-export interface AuthResponse {
-  access_token: string;
-  access_expire: number;
-  refresh_after: number;
-  is_new_user?: boolean;
-}
-
-export interface UserResponse {
-  user_id: number;
-  first_name: string;
-  last_name: string;
-  phone_number: string;
-  email: string;
-}
-
-export interface GoalResponse {
-  goal_id: number;
-  goal: string;
-  description: string;
-  value: number;
-  deadline: number;
-  supervisor_phone_number: string;
-  supervisor_email: string;
-  done: boolean;
-  created_at: number;
-  creator_phone_number: string;
-  creator_first_name: string;
-  creator_last_name: string;
-  creator_email: string;
-}
-
-export interface PaymentResponse {
-  goal_id: number;
-  amount: number;
-  pgp_name: string;
-  tracing_code: string;
-}
-
-export interface ConfigResponse {
-  goal_creation_fee: number;
-  min_goal_hours: number;
-  max_goal_hours: number;
-  min_goal_value: number;
-  max_goal_value: number;
-  otp_timeout: number;
-}
-
 export const api = {
   auth: {
-    login: (data: { phone_number: string; password?: string; code?: string }) =>
+    login: (data: AuthRequest) =>
       apiRequest<AuthResponse>('/auth', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
 
-    sendCode: (phone_number: string) =>
-      apiRequest('/sendCode', {
+    sendCode: (data: SendCodeRequest) =>
+      apiRequest<SendCodeResponse>('/sendCode', {
         method: 'POST',
-        body: JSON.stringify({ phone_number }),
+        body: JSON.stringify(data),
       }),
 
     refreshToken: () =>
-      apiRequest<AuthResponse>('/refreshToken', {
+      apiRequest<RefreshTokenResponse>('/refreshToken', {
         method: 'POST',
       }),
   },
 
   user: {
     getMe: () =>
-      apiRequest<UserResponse>('/getMe', {
+      apiRequest<GetMeResponse>('/getMe', {
         method: 'POST',
       }),
 
-    editUser: (data: Partial<UserResponse>) =>
-      apiRequest<UserResponse>('/editUser', {
+    editUser: (data: EditUserRequest) =>
+      apiRequest<EditUserResponse>('/editUser', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
 
-    editPassword: (password: string, confirmation: string) =>
-      apiRequest('/editPassword', {
+    editPassword: (data: EditPasswordRequest) =>
+      apiRequest<EditPasswordResponse>('/editPassword', {
         method: 'POST',
-        body: JSON.stringify({ password, confirmation }),
+        body: JSON.stringify(data),
       }),
   },
 
   goals: {
-    create: (data: {
-      goal: string;
-      description?: string;
-      value: number;
-      deadline: number;
-      supervisor_phone_number: string;
-    }) =>
-      apiRequest<{ payment_url: string }>('/setGoal', {
+    create: (data: SetGoalRequest) =>
+      apiRequest<SetGoalResponse>('/setGoal', {
         method: 'POST',
         body: JSON.stringify(data),
       }),
 
-    getAll: (page: number = 0) =>
-      apiRequest<{ page: number; goals: GoalResponse[] }>('/getGoals', {
+    getAll: (data: GetGoalsRequest) =>
+      apiRequest<GetGoalsResponse>('/getGoals', {
         method: 'POST',
-        body: JSON.stringify({ page }),
+        body: JSON.stringify(data),
       }),
 
-    getSupervisions: (page: number = 0) =>
-      apiRequest<{ page: number; goals: GoalResponse[] }>('/getSupervisions', {
+    getSupervisions: (data: GetSupervisionsRequest) =>
+      apiRequest<GetSupervisionsResponse>('/getSupervisions', {
         method: 'POST',
-        body: JSON.stringify({ page }),
+        body: JSON.stringify(data),
       }),
 
-    view: (goal_id: number) =>
-      apiRequest<GoalResponse>('/viewGoal', {
+    view: (data: ViewGoalRequest) =>
+      apiRequest<ViewGoalResponse>('/viewGoal', {
         method: 'POST',
-        body: JSON.stringify({ goal_id }),
+        body: JSON.stringify(data),
       }),
 
-    supervise: (goal_id: number, done: boolean, description?: string) =>
-      apiRequest<GoalResponse>('/superviseGoal', {
+    supervise: (data: SuperviseGoalRequest) =>
+      apiRequest<SuperviseGoalResponse>('/superviseGoal', {
         method: 'POST',
-        body: JSON.stringify({ goal_id, done, description }),
+        body: JSON.stringify(data),
       }),
   },
 
   config: {
     get: () =>
-      apiRequest<ConfigResponse>('/getConfig', {
+      apiRequest<GetConfigResponse>('/getConfig', {
         method: 'POST',
       }),
   },
 
   payments: {
-    getStatus: (payment_id: number) =>
-      apiRequest<PaymentResponse>('/getPayment', {
+    getStatus: (data: GetPaymentRequest) =>
+      apiRequest<GetPaymentResponse>('/getPayment', {
         method: 'POST',
-        body: JSON.stringify({ payment_id }),
+        body: JSON.stringify(data),
       }),
   },
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Target, Heart, DollarSign, AlertCircle, Shield } from 'lucide-react';
 import { AuthModal } from './components/AuthModal';
@@ -13,18 +13,23 @@ import { SupervisionPage } from './pages/SupervisionPage';
 import { useAuthContext } from './context/AuthContext';
 import { api } from './config/api';
 import { CONFIG } from './config/constants';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { isAuthenticated } = useAuthContext();
+  const { isAuthenticated, isLoading } = useAuthContext();
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [goalTitle, setGoalTitle] = React.useState('');
   const [configLoaded, setConfigLoaded] = useState(false);
+  const hasFetchedConfig = useRef(false);
 
   useEffect(() => {
     const fetchConfig = async () => {
+      if (hasFetchedConfig.current) return;
+      hasFetchedConfig.current = true;
+
       try {
         const response = await api.config.get();
         if (response.ok && response.data) {
@@ -45,11 +50,19 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated && location.pathname !== '/') {
+    if (!isAuthenticated && !isLoading && location.pathname !== '/') {
       setShowAuthModal(true);
-      navigate(`/?redirect=${location.pathname}${location.search}`);
+      navigate(`/?redirect=${encodeURIComponent(`${location.pathname}${location.search}`)}`);
     }
-  }, [isAuthenticated, navigate, location]);
+  }, [isAuthenticated, isLoading, navigate, location]);
+
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    if (isAuthenticated && redirect){
+      setShowAuthModal(false);
+      navigate(decodeURIComponent(redirect));
+    }
+  }, [isAuthenticated, navigate, location,searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,9 +78,8 @@ function App() {
     console.log("this is handle auth success");
     setShowAuthModal(false);
     const redirect = searchParams.get('redirect');
-    console.log("redirect:", redirect);
     if (redirect){
-      navigate(redirect || '/', { state: { goalTitle }});
+      navigate(decodeURIComponent(redirect) || '/', { state: { goalTitle }});
     } else {
       navigate(goalTitle ? '/create-goal' : '/', { state: { goalTitle }});
     }
@@ -80,12 +92,12 @@ function App() {
       
       <main className="pt-16">
         <Routes>
-          <Route path="/create-goal" element={<CreateGoalPage />} />
-          <Route path="/goals" element={<GoalsPage />} />
-          <Route path="/goals/:id" element={<GoalDetailsPage />} />
-          <Route path="/supervisions/:id" element={<SupervisionPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/payment-status" element={<PaymentStatusPage />} />
+          <Route path="/create-goal" element={<ProtectedRoute element={<CreateGoalPage />} />} />
+          <Route path="/goals" element={<ProtectedRoute element={<GoalsPage />} />} />
+          <Route path="/goals/:id" element={<ProtectedRoute element={<GoalDetailsPage />} />} />
+          <Route path="/supervisions/:id" element={<ProtectedRoute element={<SupervisionPage />} />} />
+          <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
+          <Route path="/payment-status" element={<ProtectedRoute element={<PaymentStatusPage />} />} />
           <Route path="/" element={
             <div className="text-white">
               <AuthModal

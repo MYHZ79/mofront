@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Target, Plus, LogIn, User, ChevronDown } from 'lucide-react';
+import { Goal,Target, Plus, LogIn, User, ChevronDown } from 'lucide-react';
 import { useAuthContext } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -62,7 +62,7 @@ export function Header({ onShowAuth }: HeaderProps) {
               }}
             >
               <div className="logo-animation w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:shadow-red-500/30 transition-all duration-300">
-                <Target className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform" />
+                <Goal className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                 موتیو

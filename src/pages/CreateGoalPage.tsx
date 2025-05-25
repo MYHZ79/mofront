@@ -42,19 +42,21 @@ const toPersianDate = (date: Date): DayObject => {
 
 const getMinMaxDates = () => {
   const today = new Date();
-  const minDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.MIN_DAYS * 24 * 60 * 60 * 1000));
-  const maxDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.MAX_DAYS * 24 * 60 * 60 * 1000));
-  
+  const minDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.min_goal_hours * 60 * 60 * 1000));
+  minDate.setHours(23, 59, 59, 999); // Round minDate to the end of the day
+
+  const maxDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.max_goal_hours * 60 * 60 * 1000));
+  maxDate.setDate(maxDate.getDate() - 1); // Set maxDate to the day before
+  maxDate.setHours(23, 59, 59, 999); // Round maxDate to the end of the day
+
   return {
     min: toPersianDate(minDate),
     max: toPersianDate(maxDate)
   };
 };
 
-const getDefaultDate = (): DayObject => {
-  const date = new Date();
-  date.setDate(date.getDate() + 3);
-  return toPersianDate(date);
+const getDefaultDate = (minDate: DayObject): DayObject => {
+  return minDate;
 };
 
 export function CreateGoalPage() {
@@ -62,21 +64,21 @@ export function CreateGoalPage() {
   const navigate = useNavigate();
   const initialTitle = location.state?.goalTitle || '';
   const { min: minimumDate, max: maximumDate } = getMinMaxDates();
-  const defaultDate = getDefaultDate();
+  const defaultDate = minimumDate; // getDefaultDate is no longer needed as it just returned minimumDate
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const { user } = useAuthContext();
   const [goalData, setGoalData] = useState<GoalData>({
     title: initialTitle,
     description: '',
-    deadline: toGregorianDate(defaultDate).toISOString().split('T')[0],
-    amount: formatAmount(CONFIG.GOAL_AMOUNT.MIN),
+    deadline: toGregorianDate(minimumDate).toISOString().split('T')[0],
+    amount: formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value),
     supervisor: '',
   });
   
-  const [selectedDay, setSelectedDay] = useState<DayObject>(defaultDate);
+  const [selectedDay, setSelectedDay] = useState<DayObject>(minimumDate);
   const [errors, setErrors] = useState<Partial<GoalData>>({});
-  const [amountInput, setAmountInput] = useState('');
+  const [amountInput, setAmountInput] = useState(formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value));
 
   const validateStep = (step: Step): boolean => {
     const newErrors: Partial<GoalData> = {};
@@ -94,7 +96,7 @@ export function CreateGoalPage() {
         } else {
           const date = new Date(goalData.deadline);
           if (!validateDeadline(date)) {
-            newErrors.deadline = `تاریخ باید بین ${CONFIG.GOAL_DEADLINE.MIN_DAYS} روز و ${CONFIG.GOAL_DEADLINE.MAX_DAYS} روز آینده باشد`;
+            newErrors.deadline = `تاریخ باید بین ${Math.floor(CONFIG.GOAL_DEADLINE.min_goal_hours / 24)+1} تا ${Math.floor(CONFIG.GOAL_DEADLINE.max_goal_hours / 24)+1} روز آینده باشد`;
           }
         }
         break;
@@ -103,8 +105,8 @@ export function CreateGoalPage() {
         const amount = Number(amountInput);
         if (!amount) {
           newErrors.amount = 'مبلغ اجباری است';
-        } else if (amount < CONFIG.GOAL_AMOUNT.MIN || amount > CONFIG.GOAL_AMOUNT.MAX) {
-          newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.MIN)} و ${formatAmount(CONFIG.GOAL_AMOUNT.MAX)} تومان باشد`;
+        } else if (amount < CONFIG.GOAL_AMOUNT.min_goal_value || amount > CONFIG.GOAL_AMOUNT.max_goal_value) {
+          newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و ${formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد`;
         }
         break;
 
@@ -142,8 +144,8 @@ export function CreateGoalPage() {
 
     if (!amount) {
       newErrors.amount = 'مبلغ اجباری است';
-    } else if (amount < CONFIG.GOAL_AMOUNT.MIN || amount > CONFIG.GOAL_AMOUNT.MAX) {
-      newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.MIN)} و ${formatAmount(CONFIG.GOAL_AMOUNT.MAX)} تومان باشد`;
+    } else if (amount < CONFIG.GOAL_AMOUNT.min_goal_value || amount > CONFIG.GOAL_AMOUNT.max_goal_value) {
+      newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و ${formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد`;
     }
 
     setErrors(newErrors);
@@ -340,7 +342,7 @@ export function CreateGoalPage() {
                 <p className="mt-1 text-sm text-red-500">{errors.deadline}</p>
               )}
               <p className="mt-2 text-sm text-gray-400">
-                تاریخ سررسید باید بین {CONFIG.GOAL_DEADLINE.MIN_DAYS} روز و {CONFIG.GOAL_DEADLINE.MAX_DAYS} روز از امروز باشد.
+                تاریخ سررسید باید بین {Math.floor(CONFIG.GOAL_DEADLINE.min_goal_hours / 24)+1} تا {Math.floor(CONFIG.GOAL_DEADLINE.max_goal_hours / 24)+1} روز آینده باشد.
               </p>
             </div>
           </div>
@@ -371,7 +373,7 @@ export function CreateGoalPage() {
                 </p>
               )}
               <p className="mt-2 text-sm text-gray-400">
-                مبلغ باید بین {formatAmount(CONFIG.GOAL_AMOUNT.MIN)} و {formatAmount(CONFIG.GOAL_AMOUNT.MAX)} تومان باشد.
+                مبلغ باید بین {formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و {formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد.
               </p>
             </div>
           </div>

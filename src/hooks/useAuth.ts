@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../config/api';
 import { GetMeResponse, AuthRequest } from '../types/api';
 
@@ -6,8 +6,12 @@ export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<GetMeResponse | null>(null);
+  const hasCheckedAuth = useRef(false);
 
   useEffect(() => {
+    if (hasCheckedAuth.current) return;
+    hasCheckedAuth.current = true;
+
     const token = localStorage.getItem('token');
     if (token) {
       checkAuth();

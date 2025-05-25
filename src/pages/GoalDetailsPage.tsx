@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, MessageCircle, ArrowRight, Shield } from 'lucide-react';
-import { TwitterShareButton,TwitterIcon, TelegramShareButton,TelegramIcon, WhatsappShareButton,WhatsappIcon, LinkedinShareButton,LinkedinIcon } from 'react-share';
+import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, flag, ArrowRight, Shield, Flag } from 'lucide-react';
+import { TwitterShareButton, TwitterIcon, TelegramShareButton, TelegramIcon, WhatsappShareButton, WhatsappIcon, LinkedinShareButton, LinkedinIcon } from 'react-share';
 import toast from 'react-hot-toast';
-import { Goal, ViewGoalRequest, SuperviseGoalRequest, ViewGoalResponse, SuperviseGoalResponse } from '../types/api';
+import { Goal, ViewGoalRequest, SuperviseGoalRequest } from '../types/api';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
 import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
+import { useAuth } from '../hooks/useAuth';
 
 export function GoalDetailsPage() {
   const { id } = useParams();
@@ -17,8 +18,10 @@ export function GoalDetailsPage() {
   const [isSupervisor, setIsSupervisor] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [countdown, setCountdown] = useState('');
+  const [supervisionDescription, setSupervisionDescription] = useState('');
   const shareUrl = window.location.href;
   const shareTitle = goal ? `هدف من در موتیو: ${goal.goal}` : '';
+  const { user, isLoading: isAuthLoading } = useAuth(); // Get isLoading from useAuth
   const hasFetchedGoal = useRef(false);
 
   useEffect(() => {
@@ -30,27 +33,32 @@ export function GoalDetailsPage() {
         const response = await api.goals.view({ goal_id: parseInt(id!) } as ViewGoalRequest);
         if (response.ok && response.data) {
           setGoal(response.data);
-          const userPhone = localStorage.getItem('userPhone');
-          if (userPhone) {
-            setIsSupervisor(response.data.supervisor_phone_number === userPhone);
-            setIsOwner(response.data.supervisor_phone_number !== userPhone);
+          // Check if user is loaded before accessing phone_number
+          if (user?.phone_number) {
+            setIsSupervisor(response.data.supervisor_phone_number === user.phone_number);
+            setIsOwner(response.data.supervisor_phone_number !== user.phone_number);
           }
         } else {
           setGoal(null);
           toast.error(response.error || 'خطا در دریافت اطلاعات هدف');
+          if (isSupervisor) navigate('/goals');
         }
       } catch (error) {
         setGoal(null);
         setIsSupervisor(false);
         setIsOwner(false);
         toast.error('خطا در دریافت اطلاعات هدف');
+        if (isSupervisor) navigate('/goals');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGoal();
-  }, [id]);
+    // Only fetch goal if auth is not loading
+    if (!isAuthLoading) {
+      fetchGoal();
+    }
+  }, [id, user?.phone_number, isAuthLoading]); // Add isAuthLoading to dependency array
 
   useEffect(() => {
     if (!goal || goal.done || goal.supervised_at || goal.deadline === undefined) return;
@@ -96,7 +104,12 @@ export function GoalDetailsPage() {
 
   const handleSupervision = async (approve: boolean) => {
     try {
-      const response = await api.goals.supervise({ goal_id: parseInt(id!), done: approve } as SuperviseGoalRequest);
+      const response = await api.goals.supervise({
+        goal_id: parseInt(id!),
+        done: approve,
+        description: supervisionDescription || undefined
+      } as SuperviseGoalRequest);
+      
       if (response.ok) {
         toast.success(approve ? 'هدف با موفقیت تایید شد' : 'هدف رد شد');
         navigate('/goals');
@@ -108,7 +121,8 @@ export function GoalDetailsPage() {
     }
   };
 
-  if (loading) {
+  // Use isAuthLoading to show loading state while auth is loading
+  if (loading || isAuthLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>
@@ -145,8 +159,8 @@ export function GoalDetailsPage() {
         </button>
 
         <div className="bg-gray-900 rounded-xl p-6 md:p-8 space-y-8">
-          <div className="flex items-center justify-between pb-6 border-b border-gray-800">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between pb-6 border-b border-gray-800">
+            <div className="flex items-center gap-4 mb-4 md:mb-0">
               <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
                 <Target className="w-6 h-6 text-red-500" />
               </div>
@@ -155,7 +169,7 @@ export function GoalDetailsPage() {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2 justify-start md:justify-center">
               <TwitterShareButton url={shareUrl} title={shareTitle}>
                 <button className="w-10 h-10 bg-blue-400/20 rounded-lg flex items-center justify-center hover:bg-blue-400/40 transition-colors">
                   <TwitterIcon size={30} bgStyle={{fill:'none'}}/>
@@ -176,7 +190,7 @@ export function GoalDetailsPage() {
                   <WhatsappIcon size={30} bgStyle={{fill:'none'}}/>
                 </button>
               </WhatsappShareButton>
-            </div>
+            </div> */}
           </div>
 
           {goal.description && (
@@ -245,56 +259,88 @@ export function GoalDetailsPage() {
               </div>
             </div>
           </div>
-{
-  !goal.done && !goal.supervised_at && remaining >= 0 && countdown ? (
-    <div className="bg-yellow-500/10 rounded-lg p-6 text-center">
-      <Clock className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
-      <p className="text-2xl font-bold text-yellow-500">{countdown}</p>
-      {remaining >= 0 && <p className="text-yellow-200 mt-2">تا پایان مهلت</p>}
-    </div>
-  ) : (
-    <div className={`${goal.done ? 'bg-green-800/50' : 'bg-red-800/50'} rounded-lg p-6 space-y-4`}>
-      <div className="flex items-center gap-3">
-        <Shield className="w-5 h-5 text-gray-400" />
-        <h3 className="text-lg font-bold">نتیجه نظارت</h3>
-      </div>
 
-      {goal.supervised_at ? (
-        <>
-          <div className="flex bg-gray-500/20 rounded-lg p-3 text-center items-center gap-3">
-            <div className={`w-3 h-3 rounded-full ${goal.done ? 'bg-green-500' : 'bg-red-500'}`} />
-            <p>{goal.done ? 'ناظر انجام هدف را تایید کرده است' : 'ناظر انجام هدف را رد کرد'}</p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Clock className="w-5 h-5 text-gray-400" />
-            <div>
-              <p className="text-sm text-gray-400">زمان نظارت</p>
-              <p>{new Date(goal.supervised_at * 1000).toLocaleDateString('fa-IR')}</p>
+          {!goal.supervised_at && remaining >= 0 && countdown ? (
+            <div className="bg-yellow-500/10 rounded-lg p-6 text-center">
+              <Clock className="w-8 h-8 text-yellow-500 mx-auto mb-3" />
+              <p className="text-2xl font-bold text-yellow-500">{countdown}</p>
+              {remaining >= 0 && <p className="text-yellow-200 mt-2">تا پایان مهلت</p>}
             </div>
-          </div>
+          ) : (
+            <div className={`${goal.done ? 'bg-green-800/50' : 'bg-red-800/50'} rounded-lg p-6 space-y-4`}>
+              <div className="flex items-center gap-3">
+                <Shield className="w-5 h-5 text-gray-400" />
+                <h3 className="text-lg font-bold">نتیجه نظارت</h3>
+              </div>
 
-          {goal.supervisor_description && (
-            <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
-              <p className="text-sm text-gray-400">توضیحات ناظر:</p>
-              <p className="mt-2">{goal.supervisor_description}</p>
+              {goal.supervised_at ? (
+                <>
+                  <div className="flex bg-gray-500/20 rounded-lg p-3 text-center items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${goal.done ? 'bg-green-500' : 'bg-red-500'}`} />
+                    <p>{goal.done ? 'ناظر انجام هدف را تایید کرده است' : 'ناظر انجام هدف را رد کرد'}</p>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <p className="text-sm text-gray-400">زمان نظارت</p>
+                      <p>{new Date(goal.supervised_at * 1000).toLocaleDateString('fa-IR')}</p>
+                    </div>
+                  </div>
+
+                  {goal.supervisor_description && (
+                    <div className="mt-4 p-4 bg-gray-800/50 rounded-lg">
+                      <p className="text-sm text-gray-400">توضیحات ناظر:</p>
+                      <p className="mt-2">{goal.supervisor_description}</p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="flex bg-gray-500/20 rounded-lg p-3 text-center items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <p>هدف نظارت نشده است</p>
+                </div>
+              )}
             </div>
           )}
-        </>
-      ) : (
-        <div className="flex bg-gray-500/20 rounded-lg p-3 text-center items-center gap-3">
-          <div className="w-3 h-3 rounded-full bg-yellow-500" />
-          <p>هدف نظارت نشده است</p>
-        </div>
-      )}
-    </div>
-  )
-}
 
 
-          {isSupervisor && !goal.done && (
+          {isSupervisor && !goal.supervised_at &&  remaining >= 0 && (
             <div className="pt-6 border-t border-gray-800">
-              <p className="text-lg font-medium mb-4">تایید یا رد هدف</p>
+
+              
+              <div className="flex items-center gap-3">
+                <Shield className="w-5 h-5 text-gray-400 mb-4" />
+                <div>
+                <p className="text-lg font-medium mb-4">ثبت نظارت</p>
+                </div>
+              </div>
+
+             <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mb-4">
+                <div className="flex gap-2">
+                  <Flag className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                  <div className="text-sm text-yellow-200">
+                    شما به عنوان ناظر این هدف انتخاب شده‌اید. لطفاً تا پایان روز {goal.deadline ? new Date(goal.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'} وضعیت پیشرفت این هدف را ثبت کنید.  
+                    <br />
+                    شما میتوانید علاوه بر ثبت نظارت، توضیحاتی برای مالک هدف ثبت کنید تا بازخورد شما برای او شفاف باشد. 
+                  </div>
+                </div>
+              </div>
+
+
+
+              
+              {isSupervisor && (
+                
+                <textarea
+                  value={supervisionDescription}
+                  onChange={(e) => setSupervisionDescription(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+                  placeholder="توضیحات خود را وارد کنید"
+                  rows={4}
+                />
+              )}
+              
               <div className="flex gap-4">
                 <button
                   onClick={() => handleSupervision(true)}

@@ -33,10 +33,12 @@ function App() {
       try {
         const response = await api.config.get();
         if (response.ok && response.data) {
-          CONFIG.GOAL_DEADLINE.MIN_DAYS = response.data.min_goal_hours / 24;
-          CONFIG.GOAL_DEADLINE.MAX_DAYS = response.data.max_goal_hours / 24;
-          CONFIG.GOAL_AMOUNT.MIN = response.data.min_goal_value;
-          CONFIG.GOAL_AMOUNT.MAX = response.data.max_goal_value;
+          CONFIG.GOAL_DEADLINE.min_goal_hours = response.data.min_goal_hours ?? CONFIG.GOAL_DEADLINE.min_goal_hours;
+          CONFIG.GOAL_DEADLINE.max_goal_hours = response.data.max_goal_hours ?? CONFIG.GOAL_DEADLINE.max_goal_hours;
+          CONFIG.GOAL_AMOUNT.min_goal_value = response.data.min_goal_value ?? CONFIG.GOAL_AMOUNT.min_goal_value;
+          CONFIG.GOAL_AMOUNT.max_goal_value = response.data.max_goal_value ?? CONFIG.GOAL_AMOUNT.max_goal_value;
+          CONFIG.OTP_TIMEOUT = response.data.otp_timeout ?? CONFIG.OTP_TIMEOUT;
+          CONFIG.SUPERVISION_TIMEOUT_HOURS = response.data.supervision_timeout_hours ?? CONFIG.SUPERVISION_TIMEOUT_HOURS;
           setConfigLoaded(true);
         } else {
           toast.error(response.error || 'Failed to load config');

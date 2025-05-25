@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { User, Mail, Phone, Calendar, UserCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { GetMeResponse, EditUserRequest, EditPasswordRequest } from '../types/api';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
+import { useAuth } from '../hooks/useAuth'; // Import useAuth
 
 // Test user data
 // const testUser: UserType = {
@@ -17,47 +18,30 @@ import { api } from '../config/api';
 // };
 
 export function ProfilePage() {
-  const [user, setUser] = useState<GetMeResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, isLoading } = useAuth(); // Use user and isLoading from useAuth
   const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    phone_number: '',
-    email: '',
+    first_name: user?.first_name || '',
+    last_name: user?.last_name || '',
+    phone_number: user?.phone_number || '',
+    email: user?.email || '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
-  const hasFetchedUser = useRef(false);
 
+  // Update formData when user data from useAuth changes
   useEffect(() => {
-    const fetchUser = async () => {
-      if (hasFetchedUser.current) return;
-      hasFetchedUser.current = true;
+    if (user) {
+      setFormData({
+        ...formData,
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
+        phone_number: user.phone_number || '',
+        email: user.email || '',
+      });
+    }
+  }, [user]);
 
-      try {
-        const response = await api.user.getMe();
-        if (response.ok && response.data) {
-          setUser(response.data);
-          setFormData({
-            ...formData,
-            first_name: response.data.first_name || '',
-            last_name: response.data.last_name || '',
-            phone_number: response.data.phone_number || '',
-            email: response.data.email || '',
-          });
-        } else {
-          toast.error(response.error || 'خطا در دریافت اطلاعات کاربر');
-        }
-      } catch (error) {
-        toast.error('خطا در ارتباط با سرور');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,7 +89,7 @@ export function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (isLoading) { // Use isLoading from useAuth
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>

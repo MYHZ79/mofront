@@ -26,6 +26,8 @@
     "vite": "^5.1.6"
   },
   "scripts": {
-    "dev": "vite"
+    "dev": "vite",
+    "build": "sudo vite build --base=/var/www/html/",
+    "preview": "vite preview"
   }
 }

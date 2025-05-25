@@ -1,12 +1,14 @@
 export const CONFIG = {
   GOAL_DEADLINE: {
-    MIN_DAYS: 3,
-    MAX_DAYS: 60,
+    min_goal_hours: 72, // Default to 3 days * 24 hours
+    max_goal_hours: 1440, // Default to 60 days * 24 hours
   },
   GOAL_AMOUNT: {
-    MIN: 100_000, // 100,000 تومان
-    MAX: 10_000_000, // 10,000,000 تومان
+    min_goal_value: 100_000, // Default
+    max_goal_value: 10_000_000, // Default
   },
+  OTP_TIMEOUT: 120, // Default
+  SUPERVISION_TIMEOUT_HOURS: 24, // Default
 };
 
 export const formatAmount = (amount: number): string => {
@@ -19,16 +21,32 @@ export const isValidIranianMobile = (phone: string): boolean => {
 };
 
 export const validateDeadline = (date: Date): boolean => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const minGoalHours = CONFIG.GOAL_DEADLINE?.min_goal_hours;
+  const maxGoalHours = CONFIG.GOAL_DEADLINE?.max_goal_hours;
 
-  const minDate = new Date(today);
-  minDate.setDate(today.getDate() + CONFIG.GOAL_DEADLINE.MIN_DAYS);
+  // If config values are not properly loaded or are invalid, return false
+  if (typeof minGoalHours !== 'number' || typeof maxGoalHours !== 'number' || isNaN(minGoalHours) || isNaN(maxGoalHours)) {
+    console.error("Configuration for GOAL_DEADLINE is not properly loaded or is invalid. Cannot validate deadline.");
+    return false;
+  }
 
-  const maxDate = new Date(today);
-  maxDate.setDate(today.getDate() + CONFIG.GOAL_DEADLINE.MAX_DAYS);
+  // Get current UTC time
+  const nowUtc = new Date();
 
-  return date >= minDate && date <= maxDate;
+  // Create the deadline date at 23:59:59 UTC of the selected day
+  // This aligns with the backend's "end of day" logic for the deadline itself,
+  // but performed in UTC to avoid client timezone discrepancies.
+  const deadlineEndOfDayUtc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999));
+
+  // Calculate min and max allowed timestamps based on current UTC time + config hours
+  const minAllowedTimestampUtc = nowUtc.getTime() + minGoalHours * 60 * 60 * 1000;
+  const maxAllowedTimestampUtc = nowUtc.getTime() + maxGoalHours * 60 * 60 * 1000;
+
+  // Backend logic: (deadline <= minAllowed) OR (deadline >= maxAllowed) is INVALID
+  // So, VALID is: minAllowed < deadline < maxAllowed
+  // Compare timestamps in UTC
+  return deadlineEndOfDayUtc.getTime() > minAllowedTimestampUtc &&
+         deadlineEndOfDayUtc.getTime() < maxAllowedTimestampUtc;
 };
 
 const numberToPersianWords = (amount: number): string => {

@@ -65,7 +65,6 @@ export function GoalsPage() {
               <th className="text-right py-3 px-4">مبلغ</th>
               <th className="text-right py-3 px-4">تاریخ سررسید</th>
               <th className="text-right py-3 px-4">وضعیت</th>
-              <th className="text-right py-3 px-4"></th>
             </tr>
           </thead>
           <tbody>
@@ -76,46 +75,62 @@ export function GoalsPage() {
                 onClick={(e) => {
                   e.stopPropagation();
                   if (item.goal_id !== undefined) {
-                    if (title === 'اهداف من') {
-                      navigate(`/goals/${item.goal_id}`);
-                    } else {
-                      navigate(`/supervisions/${item.goal_id}`);
-                    }
+                    navigate(`/goals/${item.goal_id}`);
                   }
                 }}
               >
                 <td className="py-4 px-4">{item.goal}</td>
-                <td className="py-4 px-4">{formatAmount(item.value)} تومان</td>
+                <td className="py-4 px-4">{item.value ? formatAmount(item.value): 'N/A'} تومان</td>
                 <td className="py-4 px-4">
                   {item.deadline ? new Date(item.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'}
                 </td>
                 <td className="py-4 px-4">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      item.done
-                        ? 'bg-green-500/10 text-green-500'
-                        : 'bg-yellow-500/10 text-yellow-500'
-                    }`}
-                  >
-                    {item.done ? 'تکمیل شده' : 'در حال انجام'}
-                  </span>
-                </td>
-                <td className="py-4 px-4">
-                  <button
-                    className="text-gray-400 hover:text-white transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                       if (item.goal_id !== undefined) {
-                        if (title === 'اهداف من') {
-                          navigate(`/goals/${item.goal_id}`);
-                        } else {
-                          navigate(`/supervisions/${item.goal_id}`);
-                        }
-                      }
-                    }}
-                  >
-                    <Eye className="w-5 h-5" />
-                  </button>
+                  {(() => {
+                    const now = new Date().getTime() / 1000;
+                    const deadline = item.deadline;
+                    const isSupervised = item.supervised_at !== undefined && item.supervised_at !== null;
+
+                    let deadlineStatusText;
+                    let deadlineStatusClass;
+
+                    if (deadline && deadline < now) {
+                      deadlineStatusText = 'مهلت به پایان رسیده';
+                      deadlineStatusClass = 'bg-red-500/10 text-red-500';
+                    } else if (isSupervised) {
+                       deadlineStatusText = 'فرآیند به پایان رسیده';
+                       deadlineStatusClass = 'bg-green-500/10 text-green-500';
+                    }
+                     else {
+                      deadlineStatusText = 'در حال انجام';
+                      deadlineStatusClass = 'bg-yellow-500/10 text-yellow-500';
+                    }
+
+                    let supervisionStatusText = '';
+                    let supervisionStatusClass = '';
+
+                    if (isSupervised) {
+                      supervisionStatusText = item.done ? 'نظارت: تکمیل شده' : 'نظارت: در انتظار تایید';
+                      supervisionStatusClass = item.done ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500';
+                    }
+
+
+                    return (
+                      <div className="flex flex-col space-y-1">
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${deadlineStatusClass}`}
+                        >
+                          {deadlineStatusText}
+                        </span>
+                        {isSupervised && (
+                           <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${supervisionStatusClass}`}
+                          >
+                            {supervisionStatusText}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </td>
               </tr>
             ))}

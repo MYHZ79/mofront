@@ -27,7 +27,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "sudo vite build --base=/var/www/html/",
+    "build": "vite build",
     "preview": "vite preview"
   }
 }

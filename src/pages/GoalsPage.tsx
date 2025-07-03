@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Target, Eye, Calendar, DollarSign, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Goal, GetGoalsRequest, GetSupervisionsRequest } from '../types/api';
-import { formatAmount } from '../config/constants';
+import { formatAmount, toTomans } from '../config/constants';
 import { api } from '../config/api';
 
 
@@ -80,7 +80,7 @@ export function GoalsPage() {
                 }}
               >
                 <td className="py-4 px-4">{item.goal}</td>
-                <td className="py-4 px-4">{item.value ? formatAmount(item.value): 'N/A'} تومان</td>
+                <td className="py-4 px-4">{item.value ? formatAmount(toTomans(item.value)): 'N/A'} تومان</td>
                 <td className="py-4 px-4">
                   {item.deadline ? new Date(item.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'}
                 </td>

@@ -1,11 +1,13 @@
+export const RIAL_TO_TOMAN_FACTOR = 10;
+
 export const CONFIG = {
   GOAL_DEADLINE: {
     min_goal_hours: 72, // Default to 3 days * 24 hours
     max_goal_hours: 1440, // Default to 60 days * 24 hours
   },
   GOAL_AMOUNT: {
-    min_goal_value: 100_000, // Default
-    max_goal_value: 10_000_000, // Default
+    min_goal_value: 10_000, // Default (100,000 Rials / 10 = 10,000 Tomans)
+    max_goal_value: 1_000_000, // Default (10,000,000 Rials / 10 = 1,000,000 Tomans)
   },
   OTP_TIMEOUT: 120, // Default
   SUPERVISION_TIMEOUT_HOURS: 24, // Default
@@ -13,6 +15,14 @@ export const CONFIG = {
 
 export const formatAmount = (amount: number): string => {
   return new Intl.NumberFormat('fa-IR').format(amount);
+};
+
+export const toRials = (tomanAmount: number): number => {
+  return tomanAmount * RIAL_TO_TOMAN_FACTOR;
+};
+
+export const toTomans = (rialAmount: number): number => {
+  return rialAmount / RIAL_TO_TOMAN_FACTOR;
 };
 
 export const isValidIranianMobile = (phone: string): boolean => {

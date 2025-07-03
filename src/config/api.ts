@@ -40,6 +40,7 @@ interface ApiResponse<T> {
   ok: boolean;
   data?: T;
   error?: string;
+  status: number; // Add status code
 }
 
 async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
@@ -47,7 +48,7 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
   if (!data.ok && data.error) {
     toast.error(data.error);
   }
-  return data;
+  return { ...data, status: response.status }; // Include status
 }
 
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
@@ -68,7 +69,8 @@ async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promi
   } catch (error) {
     console.error('API Error:', error);
     toast.error('خطا در برقراری ارتباط با سرور');
-    return { ok: false, error: 'خطا در برقراری ارتباط با سرور' };
+    // For network errors, return a distinct status code like 0
+    return { ok: false, error: 'خطا در برقراری ارتباط با سرور', status: 0 };
   }
 }
 

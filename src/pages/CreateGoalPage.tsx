@@ -4,10 +4,10 @@ import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
 import toast from 'react-hot-toast';
-import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToPersianWords } from '../config/constants';
+import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToPersianWords, toRials, toTomans } from '../config/constants';
 import { api } from '../config/api';
 import jalali from 'jalali-moment';
-import { useAuthContext } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth'; // Import useAuth
 import { SetGoalRequest } from '../types/api';
 
 type Step = 1 | 2 | 3 | 4 | 5;
@@ -40,6 +40,16 @@ const toPersianDate = (date: Date): DayObject => {
   };
 };
 
+const normalizePhoneNumber = (phone: string | undefined | null): string => {
+  if (!phone) return '';
+  const digits = phone.replace(/\D/g, ''); // Remove all non-digit characters
+  // Take the last 10 digits, which should be the core number for Iranian mobiles (e.g., 9123456789)
+  if (digits.length >= 10) {
+    return digits.slice(-10);
+  }
+  return digits; // Return as is if less than 10 digits, or if it's not a standard mobile
+};
+
 const getMinMaxDates = () => {
   const today = new Date();
   const minDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.min_goal_hours * 60 * 60 * 1000));
@@ -67,18 +77,19 @@ export function CreateGoalPage() {
   const defaultDate = minimumDate; // getDefaultDate is no longer needed as it just returned minimumDate
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
-  const { user } = useAuthContext();
+  const { user, isLoading } = useAuth();
+  console.log(user)
   const [goalData, setGoalData] = useState<GoalData>({
     title: initialTitle,
     description: '',
     deadline: toGregorianDate(minimumDate).toISOString().split('T')[0],
-    amount: formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value),
+    amount: '',
     supervisor: '',
   });
   
   const [selectedDay, setSelectedDay] = useState<DayObject>(minimumDate);
   const [errors, setErrors] = useState<Partial<GoalData>>({});
-  const [amountInput, setAmountInput] = useState(formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value));
+  const [amountInput, setAmountInput] = useState('');
 
   const validateStep = (step: Step): boolean => {
     const newErrors: Partial<GoalData> = {};
@@ -113,6 +124,12 @@ export function CreateGoalPage() {
       case 4:
         if (!isValidIranianMobile(goalData.supervisor)) {
           newErrors.supervisor = 'شماره موبایل معتبر نیست';
+        } else {
+            const normalizedUserPhone = normalizePhoneNumber(user?.phone_number);
+            const normalizedSupervisorPhone = normalizePhoneNumber(goalData.supervisor);
+            if (normalizedUserPhone && normalizedUserPhone === normalizedSupervisorPhone) {
+              newErrors.supervisor = 'شماره موبایل ناظر نمی‌تواند با شماره شما یکسان باشد';
+            }
         }
         break;
     }
@@ -161,8 +178,12 @@ export function CreateGoalPage() {
     const newErrors: Partial<GoalData> = {};
     if (!isValidIranianMobile(value)) {
       newErrors.supervisor = 'شماره موبایل معتبر نیست';
-    } else if (user?.phone?.slice(2) === value?.slice(1)) {
-      newErrors.supervisor = 'شماره موبایل سرپرست نمی‌تواند با شماره شما یکسان باشد';
+    } else {
+      const normalizedUserPhone = normalizePhoneNumber(user?.phone);
+      const normalizedSupervisorPhone = normalizePhoneNumber(value);
+      if (normalizedUserPhone && normalizedUserPhone === normalizedSupervisorPhone) {
+        newErrors.supervisor = 'شماره موبایل سرپرست نمی‌تواند با شماره شما یکسان باشد';
+      }
     }
     setErrors(newErrors);
   };
@@ -172,7 +193,7 @@ export function CreateGoalPage() {
       const response = await api.goals.create({
         goal: goalData.title,
         description: goalData.description || undefined,
-        value: parseInt(amountInput),
+        value: toRials(parseInt(amountInput)), // Convert Toman to Rials before sending to backend
         deadline: Math.floor(new Date(goalData.deadline).getTime() / 1000),
         supervisor_phone_number: goalData.supervisor
       } as SetGoalRequest); // Pass SetGoalRequest object

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../config/api';
-import { useAuthContext } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { SendCodeRequest } from '../types/api';
 
@@ -14,8 +14,7 @@ interface AuthModalProps {
 }
 
 export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalProps) {
-  const { login } = useAuthContext();
-  const navigate = useNavigate();
+  const { login } = useAuth();
   const [isOtpMode, setIsOtpMode] = useState(true);
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -176,7 +175,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900"
-                  placeholder="کد ۶ رقمی"
+                  placeholder="کد یکبارمصرف"
                   required
                 />
               </div>

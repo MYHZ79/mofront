@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../config/api';
-import { formatAmount } from '../config/constants';
+import { formatAmount, toTomans } from '../config/constants';
 import { GetPaymentRequest, GetPaymentResponse } from '../types/api';
 
 
@@ -87,7 +87,7 @@ export function PaymentStatusPage() {
         <div className="space-y-4 mb-8">
           <div className="flex justify-between items-center py-3 border-b border-gray-800">
             <span className="text-gray-400">مبلغ پرداختی:</span>
-            <span className="font-bold">{formatAmount(paymentStatus.amount)} تومان</span>
+            <span className="font-bold">{formatAmount(toTomans(paymentStatus.amount))} تومان</span>
           </div>
           
           <div className="flex justify-between items-center py-3 border-b border-gray-800">

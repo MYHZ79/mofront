@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, flag, ArrowRight, Shield, Flag } from 'lucide-react';
+import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, ArrowRight, Shield, Flag } from 'lucide-react';
 import { TwitterShareButton, TwitterIcon, TelegramShareButton, TelegramIcon, WhatsappShareButton, WhatsappIcon, LinkedinShareButton, LinkedinIcon } from 'react-share';
 import toast from 'react-hot-toast';
 import { Goal, ViewGoalRequest, SuperviseGoalRequest } from '../types/api';
-import { formatAmount } from '../config/constants';
+import { formatAmount, toTomans } from '../config/constants';
 import { api } from '../config/api';
 import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
 import { useAuth } from '../hooks/useAuth';
@@ -22,6 +22,7 @@ export function GoalDetailsPage() {
   const shareUrl = window.location.href;
   const shareTitle = goal ? `هدف من در موتیو: ${goal.goal}` : '';
   const { user, isLoading: isAuthLoading } = useAuth(); // Get isLoading from useAuth
+  console.log(user)
   const hasFetchedGoal = useRef(false);
 
   useEffect(() => {
@@ -218,7 +219,7 @@ export function GoalDetailsPage() {
                 <DollarSign className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm text-gray-400">مبلغ</p>
-                  <p>{goal.value !== undefined ? formatAmount(goal.value) : 'N/A'} تومان</p>
+                  <p>{goal.value !== undefined ? formatAmount(toTomans(goal.value)) : 'N/A'} تومان</p>
                 </div>
               </div>
 

@@ -13,8 +13,8 @@ interface SortConfig {
 
 export function useTableSort(data: Goal[]) {
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    key: 'status',
-    direction: 'asc'
+    key: 'deadline',
+    direction: 'desc' // Assuming 'desc' for most recent goals first
   });
 
   const sortedData = useMemo(() => {

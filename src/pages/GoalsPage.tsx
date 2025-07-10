@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { Target, Eye, Calendar, DollarSign, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { GoalStatusDisplay } from '../components/GoalStatusDisplay';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { Goal, GetGoalsRequest, GetSupervisionsRequest } from '../types/api';
@@ -99,52 +100,7 @@ export function GoalsPage() {
                     {item.deadline ? new Date(item.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'}
                   </td>
                   <td className="py-4 px-4">
-                    {(() => {
-                      const now = new Date().getTime() / 1000;
-                      const deadline = item.deadline;
-                      const isSupervised = item.supervised_at !== undefined && item.supervised_at !== null;
-
-                      let deadlineStatusText;
-                      let deadlineStatusClass;
-
-                      if (deadline && deadline < now) {
-                        deadlineStatusText = 'مهلت به پایان رسیده';
-                        deadlineStatusClass = 'bg-red-500/10 text-red-500';
-                      } else if (isSupervised) {
-                         deadlineStatusText = 'فرآیند به پایان رسیده';
-                         deadlineStatusClass = 'bg-green-500/10 text-green-500';
-                      }
-                       else {
-                        deadlineStatusText = 'در حال انجام';
-                        deadlineStatusClass = 'bg-yellow-500/10 text-yellow-500';
-                      }
-
-                      let supervisionStatusText = '';
-                      let supervisionStatusClass = '';
-
-                      if (isSupervised) {
-                        supervisionStatusText = item.done ? 'نظارت: تکمیل شده' : 'نظارت: در انتظار تایید';
-                        supervisionStatusClass = item.done ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500';
-                      }
-
-
-                      return (
-                        <div className="flex flex-col space-y-1">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${deadlineStatusClass}`}
-                          >
-                            {deadlineStatusText}
-                          </span>
-                          {isSupervised && (
-                             <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${supervisionStatusClass}`}
-                            >
-                              {supervisionStatusText}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })()}
+                    <GoalStatusDisplay goal={item} />
                   </td>
                 </tr>
               ))}

@@ -1,6 +1,6 @@
 export const errorTranslations: { [key: string]: string } = {
   CODE_ALREADY_SENT: 'کد تایید قبلا ارسال شده است',
-  INVALID_CREDENTIALS: 'اطلاعات وارد شده صحیح نیست',
+  INVALID_CREDENTIALS: 'نام کاربری یا رمز عبور نامعتبر است',
   TOKEN_EXPIRED: 'نشست شما منقضی شده است، لطفا دوباره وارد شوید',
   INVALID_TOKEN: 'نشست نامعتبر است، لطفا دوباره وارد شوید',
   INVALID_PHONE_NUMBER: 'شماره موبایل نامعتبر است',

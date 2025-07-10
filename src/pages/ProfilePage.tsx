@@ -1,21 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { User, Mail, Phone, Calendar, UserCircle } from 'lucide-react';
+import { SEO } from '../components/SEO';
 import toast from 'react-hot-toast';
 import { GetMeResponse, EditUserRequest, EditPasswordRequest } from '../types/api';
 import { formatAmount } from '../config/constants';
 import { api } from '../config/api';
 import { useAuth } from '../hooks/useAuth'; // Import useAuth
-
-// Test user data
-// const testUser: UserType = {
-//   user_id: 1,
-//   first_name: "علی",
-//   last_name: "محمدی",
-//   phone_number: "09123456789",
-//   email: "ali@example.com",
-//   birth: 631152000, // Example timestamp
-//   gender: "M"
-// };
 
 export function ProfilePage() {
   const { user, isLoading } = useAuth(); // Use user and isLoading from useAuth
@@ -99,6 +89,10 @@ export function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8" dir="rtl">
+      <SEO
+        title="پروفایل کاربری - موتیو"
+        description="اطلاعات کاربری خود را در موتیو مدیریت کنید."
+      />
       <div className="max-w-3xl mx-auto space-y-8">
         <div className="bg-gray-900 rounded-xl p-6 md:p-8">
           <div className="flex items-center gap-4 mb-8">

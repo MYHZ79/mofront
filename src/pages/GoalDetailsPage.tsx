@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, ArrowRight, Shield, Flag } from 'lucide-react';
 import { TwitterShareButton, TwitterIcon, TelegramShareButton, TelegramIcon, WhatsappShareButton, WhatsappIcon, LinkedinShareButton, LinkedinIcon } from 'react-share';
 import toast from 'react-hot-toast';
@@ -148,8 +149,29 @@ export function GoalDetailsPage() {
     );
   }
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: goal.goal,
+    description: goal.description,
+    startDate: goal.created_at ? new Date(goal.created_at * 1000).toISOString() : undefined,
+    endDate: goal.deadline ? new Date(goal.deadline * 1000).toISOString() : undefined,
+    eventStatus: goal.done ? 'https://schema.org/EventCompleted' : 'https://schema.org/EventScheduled',
+    organizer: {
+      '@type': 'Person',
+      name: `${goal.creator_first_name} ${goal.creator_last_name}`,
+    },
+  };
+
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8" dir="rtl">
+      <SEO
+        title={`${goal.goal} - موتیو`}
+        description={goal.description || ''}
+      />
+      <script type="application/ld+json">
+        {JSON.stringify(structuredData)}
+      </script>
       <div className="max-w-3xl mx-auto">
         <button
           onClick={() => navigate('/goals')}

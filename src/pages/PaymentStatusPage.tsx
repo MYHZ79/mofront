@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../config/api';
@@ -77,6 +78,10 @@ export function PaymentStatusPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+      <SEO
+        title="وضعیت پرداخت - موتیو"
+        description="وضعیت پرداخت هدف شما در موتیو."
+      />
       <div className="bg-gray-900 rounded-xl p-8 max-w-md w-full">
         <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-8 h-8 text-green-500" />

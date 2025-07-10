@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import { Target, Eye, Calendar, DollarSign, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Goal, GetGoalsRequest, GetSupervisionsRequest } from '../types/api';
@@ -150,6 +151,10 @@ export function GoalsPage() {
 
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8" dir="rtl">
+      <SEO
+        title="اهداف من - موتیو"
+        description="اهداف و نظارت‌های خود را در موتیو مدیریت کنید."
+      />
       <div className="max-w-6xl mx-auto space-y-8">
         {renderTable(goals, 'اهداف من', <Target className="w-6 h-6 text-red-500" />)}
         {renderTable(supervisions, 'نظارت‌های من', <Shield className="w-6 h-6 text-blue-500" />)}

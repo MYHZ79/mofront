@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Goal, ViewGoalRequest, SuperviseGoalRequest, ViewGoalResponse, SuperviseGoalResponse } from '../types/api';
@@ -81,6 +82,10 @@ export function SupervisionPage() {
 
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8" dir="rtl">
+      <SEO
+        title={`نظارت: ${goal.goal} - موتیو`}
+        description={`نظارت بر هدف ${goal.goal}`}
+      />
       <div className="max-w-3xl mx-auto">
         <button
           onClick={() => navigate('/goals')}

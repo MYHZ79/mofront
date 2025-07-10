@@ -1,0 +1,13 @@
+# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
+# Allow crawling of all content
+User-agent: *
+Allow: /
+
+# Disallow all other pages
+Disallow: /create-goal
+Disallow: /goals
+Disallow: /goals/
+Disallow: /supervisions/
+Disallow: /profile
+Disallow: /payment-status

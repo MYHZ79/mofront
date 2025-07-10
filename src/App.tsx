@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Target, Heart, DollarSign, AlertCircle, Shield } from 'lucide-react';
+import { SEO } from './components/SEO';
 import { AuthModal } from './components/AuthModal';
 import { Header } from './components/Header';
 import { Toaster, toast } from 'react-hot-toast';
@@ -109,6 +110,10 @@ function App() {
             <Route path="/payment-status" element={<ProtectedRoute element={<PaymentStatusPage />} />} />
             <Route path="/" element={
               <div className="text-white">
+                <SEO
+                  title="موتیو - به اهدافت برس"
+                  description="یک هدف تعیین کن. یک ناظر انتخاب کن. پول بذار روش. انجامش بده یا پولت به خیریه اهدا میشه."
+                />
                 <AuthModal
                   isOpen={showAuthModal}
                   onClose={() => setShowAuthModal(false)}

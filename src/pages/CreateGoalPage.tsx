@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { SEO } from '../components/SEO';
 import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact, Check, Clock, Gift, ListTodo } from 'lucide-react';
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
@@ -179,7 +180,7 @@ export function CreateGoalPage() {
     if (!isValidIranianMobile(value)) {
       newErrors.supervisor = 'شماره موبایل معتبر نیست';
     } else {
-      const normalizedUserPhone = normalizePhoneNumber(user?.phone);
+      const normalizedUserPhone = normalizePhoneNumber(user?.phone_number);
       const normalizedSupervisorPhone = normalizePhoneNumber(value);
       if (normalizedUserPhone && normalizedUserPhone === normalizedSupervisorPhone) {
         newErrors.supervisor = 'شماره موبایل سرپرست نمی‌تواند با شماره شما یکسان باشد';
@@ -452,6 +453,10 @@ export function CreateGoalPage() {
 
   return (
     <div className="min-h-screen bg-black text-white" dir="rtl">
+      <SEO
+        title="هدف جدید - موتیو"
+        description="هدفت رو مشخص کن، پول بذار روش، انجامش بده!"
+      />
       <div className="max-w-2xl mx-auto px-4 py-8">
         <button
           onClick={handleBack}

@@ -19,7 +19,7 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { isAuthenticated, isLoading } = useAuth(); // Use the re-exported useAuth
+  const { isAuthenticated, isLoading, checkAuth } = useAuth(); // Use the re-exported useAuth
   const [showAuthModal, setShowAuthModal] = React.useState(false);
   const [goalTitle, setGoalTitle] = React.useState('');
   const [configLoaded, setConfigLoaded] = useState(false);
@@ -52,11 +52,17 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading && location.pathname !== '/') {
-      setShowAuthModal(true);
-      navigate(`/?redirect=${encodeURIComponent(`${location.pathname}${location.search}`)}`);
+    // Show the modal if not authenticated, not loading, and on the home page,
+    // or if redirected to home page from a protected route.
+    // The modal is only rendered on the '/' route.
+    if (!isAuthenticated && !isLoading && location.pathname === '/' && !showAuthModal) {
+      // Check if there's a redirect parameter, indicating a protected route access attempt
+      const redirect = searchParams.get('redirect');
+      if (redirect) {
+        setShowAuthModal(true);
+      }
     }
-  }, [isAuthenticated, isLoading, navigate, location]);
+  }, [isAuthenticated, isLoading, location.pathname, showAuthModal, searchParams]);
 
   useEffect(() => {
     const redirect = searchParams.get('redirect');
@@ -76,24 +82,24 @@ function App() {
     }
   };
 
- const handleAuthSuccess = () => {
-    console.log("this is handle auth success");
+  const handleAuthSuccess = React.useCallback(() => {
     setShowAuthModal(false);
     const redirect = searchParams.get('redirect');
-    if (redirect){
-      navigate(decodeURIComponent(redirect) || '/', { state: { goalTitle }});
+    if (isAuthenticated && redirect){
+      navigate(decodeURIComponent(redirect));
+    } else if (isAuthenticated) {
+      navigate(goalTitle ? '/create-goal' : '/');
     } else {
-      navigate(goalTitle ? '/create-goal' : '/', { state: { goalTitle }});
+      navigate('/');
     }
-  };
+  }, [isAuthenticated, navigate, searchParams, goalTitle, setShowAuthModal]);
 
   return (
     <div className="min-h-screen bg-black" dir="rtl">
-      <Header onShowAuth={() => setShowAuthModal(true)} />
-      <Toaster position="top-center" />
-      
       <main className="pt-16">
         <AuthProvider> {/* Wrap the Routes with AuthProvider */}
+          <Header onShowAuth={() => setShowAuthModal(true)} />
+          <Toaster position="top-center" />
           <Routes>
             <Route path="/create-goal" element={<ProtectedRoute element={<CreateGoalPage />} />} />
             <Route path="/goals" element={<ProtectedRoute element={<GoalsPage />} />} />

@@ -31,24 +31,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (!token) {
         setIsAuthenticated(false);
         setUser(null);
+        setIsLoading(false); // Ensure isLoading is set to false here too
         return;
       }
 
       const response = await api.user.getMe();
+
       if (response.ok && response.data) {
         setUser(response.data);
         setIsAuthenticated(true);
       } else {
-        // If the status is 0, it indicates a network error (backend down/unreachable).
-        // In this case, don't remove the token.
         if (response.status === 0) {
-          // Keep current authentication state if a token exists, assume it's still valid
-          // This prevents forcing re-login on temporary backend downtime
-          setIsAuthenticated(!!token); // Keep authenticated if token exists
-          setUser(null); // User data might be stale, clear it
+          setIsAuthenticated(!!token);
+          setUser(null);
         } else {
-          // For other HTTP status codes (e.g., 401 Unauthorized, 500 Internal Server Error),
-          // it means the backend responded with an error, so the token is likely invalid.
           localStorage.removeItem('token');
           setIsAuthenticated(false);
           setUser(null);
@@ -56,11 +52,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      // If an uncaught error occurs (e.g., network error before response),
-      // treat it as a network issue and don't remove the token.
-      // The `status` property from `api.ts` will be 0 in this case.
-      setIsAuthenticated(!!localStorage.getItem('token')); // Keep authenticated if token exists
-      setUser(null); // User data might be stale, clear it
+      setIsAuthenticated(!!localStorage.getItem('token'));
+      setUser(null);
     } finally {
       setIsLoading(false);
     }

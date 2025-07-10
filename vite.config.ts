@@ -8,4 +8,9 @@ export default defineConfig({
     include: ['react-share'],
     exclude: ['lucide-react'],
   },
+  server: {
+    watch: {
+      ignored: ['**/.git/**'], // Ignore .git folder
+    },
+  },
 });

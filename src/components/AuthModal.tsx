@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../config/api';
@@ -21,6 +21,34 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [otpTimeout, setOtpTimeout] = useState(60);
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchConfig = async () => {
+        try {
+          const response = await api.config.get();
+          if (response.ok && response.data) {
+            setOtpTimeout(response.data.otp_timeout ?? 60);
+          }
+        } catch (error) {
+          console.error('Failed to fetch config:', error);
+        }
+      };
+      fetchConfig();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (otpSent && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [otpSent, timer]);
 
   if (!isOpen) return null;
 
@@ -49,7 +77,11 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
       const response = await api.auth.sendCode({ phone_number: phone } as SendCodeRequest);
       if (response.ok) {
         setOtpSent(true);
+        setTimer(otpTimeout);
         toast.success('کد تایید ارسال شد');
+      } else if (response.error === 'CODE_ALREADY_SENT') {
+        setOtpSent(true);
+        setTimer(otpTimeout);
       }
     } catch (error) {
       toast.error('خطا در ارسال کد تایید');
@@ -181,6 +213,22 @@ export function AuthModal({ isOpen, onClose, onSuccess, goalTitle }: AuthModalPr
               </div>
             )}
             
+            {otpSent && timer > 0 && (
+              <div className="text-center text-gray-500 my-4">
+                زمان باقی‌مانده: {timer} ثانیه
+              </div>
+            )}
+
+            {otpSent && timer === 0 && (
+              <button
+                onClick={handleSendOTP}
+                className="w-full bg-gray-200 text-gray-800 py-2 rounded hover:bg-gray-300 disabled:opacity-50 my-4"
+                disabled={isLoading}
+              >
+                {isLoading ? 'در حال ارسال...' : 'ارسال مجدد کد'}
+              </button>
+            )}
+
             <button
               type="submit"
               className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 disabled:opacity-50"

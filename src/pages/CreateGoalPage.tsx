@@ -455,7 +455,7 @@ export function CreateGoalPage() {
     <div className="min-h-screen bg-black text-white" dir="rtl">
       <SEO
         title="هدف جدید - موتیو"
-        description="هدفت رو مشخص کن، پول بذار روش، انجامش بده!"
+        description="هدفت رو مشخص کن، تعهد بده، انجامش بده!"
       />
       <div className="max-w-2xl mx-auto px-4 py-8">
         <button

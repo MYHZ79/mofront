@@ -6,9 +6,9 @@ import { TwitterShareButton, TwitterIcon, TelegramShareButton, TelegramIcon, Wha
 import toast from 'react-hot-toast';
 import { ErrorState } from '../components/ErrorState';
 import { Goal, ViewGoalRequest, SuperviseGoalRequest } from '../types/api';
-import { formatAmount, toTomans } from '../config/constants';
+import { formatAmount, toTomans, CONFIG } from '../config/constants';
 import { api } from '../config/api';
-import { formatDistanceToNow, differenceInSeconds } from 'date-fns';
+import { formatDistanceToNow, differenceInSeconds, addHours, subHours } from 'date-fns';
 import { useAuth } from '../hooks/useAuth';
 
 export function GoalDetailsPage() {
@@ -178,6 +178,19 @@ export function GoalDetailsPage() {
     },
   };
 
+  const deadlineDate = goal.deadline ? new Date(goal.deadline * 1000) : null;
+  const supervisionTimeoutHours = CONFIG.SUPERVISION_TIMEOUT_HOURS;
+  const supervisionWindowStart = deadlineDate && supervisionTimeoutHours !== undefined
+    ? subHours(deadlineDate, supervisionTimeoutHours)
+    : null;
+  const now = new Date();
+  const isInSupervisionWindow = supervisionWindowStart && deadlineDate && now >= supervisionWindowStart && now <= deadlineDate;
+
+  const formatSupervisionTime = (date: Date | null) => {
+    if (!date) return 'N/A';
+    return date.toLocaleDateString('fa-IR') + ' ' + date.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+  };
+
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8" dir="rtl">
       <SEO
@@ -345,56 +358,61 @@ export function GoalDetailsPage() {
 
           {isSupervisor && !goal.supervised_at &&  remaining >= 0 && (
             <div className="pt-6 border-t border-gray-800">
-
-              
               <div className="flex items-center gap-3">
                 <Shield className="w-5 h-5 text-gray-400 mb-4" />
                 <div>
-                <p className="text-lg font-medium mb-4">ثبت نظارت</p>
+                  <p className="text-lg font-medium mb-4">ثبت نظارت</p>
                 </div>
               </div>
 
-             <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mb-4">
-                <div className="flex gap-2">
-                  <Flag className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-                  <div className="text-sm text-yellow-200">
-                    شما به عنوان ناظر این هدف انتخاب شده‌اید. لطفاً تا پایان روز {goal.deadline ? new Date(goal.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'} وضعیت پیشرفت این هدف را ثبت کنید.  
-                    <br />
-                    شما میتوانید علاوه بر ثبت نظارت، توضیحاتی برای مالک هدف ثبت کنید تا بازخورد شما برای او شفاف باشد. 
+              {isInSupervisionWindow ? (
+                <>
+                  <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg mb-4">
+                    <div className="flex gap-2">
+                      <Flag className="h-5 w-5 text-yellow-500 flex-shrink-0" />
+                      <div className="text-sm text-yellow-200">
+                        شما به عنوان ناظر این هدف انتخاب شده‌اید. لطفاً تا پایان روز {goal.deadline ? new Date(goal.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'} وضعیت پیشرفت این هدف را ثبت کنید.  
+                        <br />
+                        شما میتوانید علاوه بر ثبت نظارت، توضیحاتی برای مالک هدف ثبت کنید تا بازخورد شما برای او شفاف باشد. 
+                      </div>
+                    </div>
+                  </div>
+                  <textarea
+                    value={supervisionDescription}
+                    onChange={(e) => setSupervisionDescription(e.target.value)}
+                    className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+                    placeholder="توضیحات خود را وارد کنید"
+                    rows={4}
+                  />
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => handleSupervision(true)}
+                      className="flex-1 bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="w-5 h-5" />
+                      تایید هدف
+                    </button>
+                    <button
+                      onClick={() => handleSupervision(false)}
+                      className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <XCircle className="w-5 h-5" />
+                      رد هدف
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg mb-4">
+                  <div className="flex gap-2">
+                    <Clock className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                    <div className="text-sm text-blue-200">
+                      زمان نظارت بر این هدف از تاریخ {formatSupervisionTime(supervisionWindowStart)} تا {formatSupervisionTime(deadlineDate)} می‌باشد.
+                      <br />
+                      لطفاً در این بازه زمانی برای ثبت نظارت اقدام کنید.
+                    </div>
                   </div>
                 </div>
-              </div>
-
-
-
-              
-              {isSupervisor && (
-                
-                <textarea
-                  value={supervisionDescription}
-                  onChange={(e) => setSupervisionDescription(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
-                  placeholder="توضیحات خود را وارد کنید"
-                  rows={4}
-                />
               )}
-              
-              <div className="flex gap-4">
-                <button
-                  onClick={() => handleSupervision(true)}
-                  className="flex-1 bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  تایید هدف
-                </button>
-                <button
-                  onClick={() => handleSupervision(false)}
-                  className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <XCircle className="w-5 h-5" />
-                  رد هدف
-                </button>
-              </div>
             </div>
           )}
         </div>

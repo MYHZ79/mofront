@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
-import { Target, Eye, Calendar, DollarSign, Shield } from 'lucide-react';
+import { Target, Eye, Calendar, DollarSign, Shield, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { SortableTableHeader } from '../components/SortableTableHeader';
+import { useTableSort } from '../hooks/useTableSort';
 import { GoalStatusDisplay, getRowBackgroundClass, getGoalPriority } from '../components/GoalStatusDisplay';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
@@ -19,6 +21,10 @@ export function GoalsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const hasFetched = useRef(false);
+  
+  // Sorting hooks for both tables
+  const goalsSort = useTableSort(goals);
+  const supervisionsSort = useTableSort(supervisions);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,21 +39,13 @@ export function GoalsPage() {
         ]);
 
         if (goalsResponse.ok && goalsResponse.data?.goals) {
-          // Sort goals by priority (in progress first)
-          const sortedGoals = goalsResponse.data.goals.sort((a, b) => {
-            return getGoalPriority(a) - getGoalPriority(b);
-          });
-          setGoals(sortedGoals);
+          setGoals(goalsResponse.data.goals);
         } else {
           setError(goalsResponse.error || 'خطا در دریافت اهداف');
         }
 
         if (supervisionsResponse.ok && supervisionsResponse.data?.goals) {
-          // Sort supervisions by priority (in progress first)
-          const sortedSupervisions = supervisionsResponse.data.goals.sort((a, b) => {
-            return getGoalPriority(a) - getGoalPriority(b);
-          });
-          setSupervisions(sortedSupervisions);
+          setSupervisions(supervisionsResponse.data.goals);
         } else {
           // Don't set error for supervisions failure, just log it
           console.error('Failed to load supervisions:', supervisionsResponse.error);
@@ -62,16 +60,27 @@ export function GoalsPage() {
     fetchData();
   }, []);
 
-  const renderTable = (data: Goal[], title: string, icon: React.ReactNode) => (
+  const renderTable = (
+    data: Goal[], 
+    title: string, 
+    icon: React.ReactNode, 
+    sortHook: ReturnType<typeof useTableSort>
+  ) => (
     <div className="bg-gray-900 rounded-xl p-6">
       <div className="flex items-center gap-3 mb-6">
         <div className='w-12 h-12 bg-gray-300/10 rounded-full flex items-center justify-center'>
           {icon}
         </div>
-        <h2 className="table-title">{title}</h2>
+        <div className="flex-1 flex items-center justify-between">
+          <h2 className="table-title">{title}</h2>
+          <div className="flex items-center gap-2 text-sm text-gray-400">
+            <TrendingUp className="w-4 h-4" />
+            <span>مرتب‌سازی: {getSortLabel(sortHook.sortConfig.key, sortHook.sortConfig.direction)}</span>
+          </div>
+        </div>
       </div>
       
-      {data.length === 0 ? (
+      {sortHook.sortedData.length === 0 ? (
         <EmptyState
           title={title === 'اهداف من' ? 'هنوز هدفی ندارید' : 'هنوز نظارتی ندارید'}
           message={title === 'اهداف من' ? 'اولین هدف خود را ایجاد کنید و شروع به پیشرفت کنید.' : 'هنوز برای نظارت بر هدفی انتخاب نشده‌اید.'}
@@ -83,15 +92,35 @@ export function GoalsPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-800">
-                <th className="text-right py-3 px-4">عنوان</th>
-                <th className="text-right py-3 px-4">مبلغ</th>
-                <th className="text-right py-3 px-4">تاریخ سررسید</th>
-                <th className="text-right py-3 px-4">وضعیت</th>
+              <tr className="border-b border-gray-800/50">
+                <SortableTableHeader
+                  label="عنوان"
+                  sortKey="title"
+                  currentSort={sortHook.sortConfig}
+                  onSort={sortHook.handleSort}
+                />
+                <SortableTableHeader
+                  label="مبلغ"
+                  sortKey="amount"
+                  currentSort={sortHook.sortConfig}
+                  onSort={sortHook.handleSort}
+                />
+                <SortableTableHeader
+                  label="تاریخ سررسید"
+                  sortKey="deadline"
+                  currentSort={sortHook.sortConfig}
+                  onSort={sortHook.handleSort}
+                />
+                <SortableTableHeader
+                  label="وضعیت"
+                  sortKey="status"
+                  currentSort={sortHook.sortConfig}
+                  onSort={sortHook.handleSort}
+                />
               </tr>
             </thead>
             <tbody>
-              {data.map((item) => (
+              {sortHook.sortedData.map((item) => (
                 <tr
                   key={item.goal_id}
                   className={`
@@ -121,6 +150,16 @@ export function GoalsPage() {
       )}
     </div>
   );
+
+  const getSortLabel = (key: string, direction: 'asc' | 'desc') => {
+    const labels = {
+      title: direction === 'asc' ? 'عنوان (الف-ی)' : 'عنوان (ی-الف)',
+      amount: direction === 'asc' ? 'مبلغ (کم به زیاد)' : 'مبلغ (زیاد به کم)',
+      deadline: direction === 'asc' ? 'تاریخ (قدیمی‌تر)' : 'تاریخ (جدیدتر)',
+      status: direction === 'asc' ? 'وضعیت (در حال انجام اول)' : 'وضعیت (تکمیل شده اول)'
+    };
+    return labels[key as keyof typeof labels] || '';
+  };
 
   if (loading) {
     return (
@@ -162,8 +201,8 @@ export function GoalsPage() {
         description="اهداف و نظارت‌های خود را در موتیو مدیریت کنید."
       />
       <div className="max-w-6xl mx-auto space-y-8">
-        {renderTable(goals, 'اهداف من', <Target className="w-6 h-6 text-red-500" />)}
-        {renderTable(supervisions, 'نظارت‌های من', <Shield className="w-6 h-6 text-blue-500" />)}
+        {renderTable(goals, 'اهداف من', <Target className="w-6 h-6 text-red-500" />, goalsSort)}
+        {renderTable(supervisions, 'نظارت‌های من', <Shield className="w-6 h-6 text-blue-500" />, supervisionsSort)}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { SEO } from '../components/SEO';
 import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, ArrowRight, Shield, Flag } from 'lucide-react';
 import { TwitterShareButton, TwitterIcon, TelegramShareButton, TelegramIcon, WhatsappShareButton, WhatsappIcon, LinkedinShareButton, LinkedinIcon } from 'react-share';
 import toast from 'react-hot-toast';
+import { ErrorState } from '../components/ErrorState';
 import { Goal, ViewGoalRequest, SuperviseGoalRequest } from '../types/api';
 import { formatAmount, toTomans } from '../config/constants';
 import { api } from '../config/api';
@@ -134,16 +135,30 @@ export function GoalDetailsPage() {
 
   if (!goal) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl">هدف مورد نظر یافت نشد</p>
+      <div className="min-h-screen bg-black text-white" dir="rtl">
+        <SEO
+          title="هدف یافت نشد - موتیو"
+          description="هدف مورد نظر یافت نشد"
+        />
+        <div className="max-w-3xl mx-auto p-4 md:p-8">
           <button
             onClick={() => navigate('/goals')}
-            className="mt-4 flex items-center gap-2 text-red-500 hover:text-red-400"
+            className="flex items-center gap-2 text-gray-400 hover:text-white mb-8"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowRight className="w-5 h-5" />
             بازگشت به لیست اهداف
           </button>
+          
+          <div className="bg-gray-900 rounded-xl">
+            <ErrorState
+              title="هدف یافت نشد"
+              message="هدف مورد نظر شما یافت نشد یا ممکن است حذف شده باشد."
+              onRetry={() => window.location.reload()}
+              onGoHome={() => navigate('/goals')}
+              showHomeButton={true}
+              icon={<Target className="w-8 h-8 text-red-500" />}
+            />
+          </div>
         </div>
       </div>
     );

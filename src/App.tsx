@@ -11,6 +11,7 @@ import { GoalDetailsPage } from './pages/GoalDetailsPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PaymentStatusPage } from './pages/PaymentStatusPage';
 import { SupervisionPage } from './pages/SupervisionPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { api } from './config/api';
 import { CONFIG } from './config/constants';
@@ -108,6 +109,7 @@ function App() {
             <Route path="/supervisions/:id" element={<ProtectedRoute element={<SupervisionPage />} />} />
             <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
             <Route path="/payment-status" element={<ProtectedRoute element={<PaymentStatusPage />} />} />
+            <Route path="*" element={<NotFoundPage />} />
             <Route path="/" element={
               <div className="text-white">
                 <SEO

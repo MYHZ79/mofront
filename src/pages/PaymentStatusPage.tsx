@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { CheckCircle, XCircle, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { ErrorState } from '../components/ErrorState';
 import { api } from '../config/api';
 import { formatAmount, toTomans } from '../config/constants';
 import { GetPaymentRequest, GetPaymentResponse } from '../types/api';
@@ -55,20 +56,21 @@ export function PaymentStatusPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-        <div className="bg-gray-900 rounded-xl p-8 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <XCircle className="w-8 h-8 text-red-500" />
+      <div className="min-h-screen bg-black text-white" dir="rtl">
+        <SEO
+          title="خطا در پرداخت - موتیو"
+          description="خطا در دریافت وضعیت پرداخت"
+        />
+        <div className="max-w-md mx-auto p-4 flex items-center justify-center min-h-screen">
+          <div className="bg-gray-900 rounded-xl w-full">
+            <ErrorState
+              title="خطا در پرداخت"
+              message={error}
+              onRetry={() => window.location.reload()}
+              onGoHome={() => navigate('/')}
+              icon={<XCircle className="w-8 h-8 text-red-500" />}
+            />
           </div>
-          <h1 className="text-2xl font-bold mb-4">خطا در پرداخت</h1>
-          <p className="text-gray-400 mb-8">{error}</p>
-          <button
-            onClick={() => navigate('/')}
-            className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-red-600 transition-colors inline-flex items-center gap-2"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            بازگشت به صفحه اصلی
-          </button>
         </div>
       </div>
     );

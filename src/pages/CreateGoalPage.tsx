@@ -225,7 +225,7 @@ export function CreateGoalPage() {
               <div className="flex items-center gap-2 text-red-500 mb-2">
                 <h3 className="font-bold">ثبت هدف</h3>
               </div>
-              <p className="text-gray-400">شما هدف «{goalData.title}» را با مبلغ {formatAmount(parseInt(amountInput))} تومان ثبت کردید.</p>
+              <p className="text-gray-400">شما هدف «{goalData.title}» را با مبلغ {formatAmount(parseInt(amountInput))} تومان ثبت میکنید.</p>
             </div>
           </div>
 
@@ -235,7 +235,7 @@ export function CreateGoalPage() {
               <div className="flex items-center gap-2 text-red-500 mb-2">
                 <h3 className="font-bold">پرداخت مبلغ</h3>
               </div>
-              <p className="text-gray-400">پس از پرداخت، مبلغ {formatAmount(parseInt(amountInput))} تومان به صورت امانت نزد موتیو نگهداری می‌شود.</p>
+              <p className="text-gray-400"> مبلغ پرداختی به  امانت نزد موتیو نگهداری می‌شود.</p>
             </div>
           </div>
 
@@ -246,7 +246,7 @@ export function CreateGoalPage() {
         
                 <h3 className="font-bold">تعیین ناظر</h3>
               </div>
-              <p className="text-gray-400">ناظر شما با شماره {goalData.supervisor} مسئول تایید انجام هدف خواهد بود.</p>
+              <p className="text-gray-400">ناظر انتخابی شما با شماره {goalData.supervisor} مسئول تایید انجام هدف خواهد بود.</p>
             </div>
           </div>
 
@@ -257,7 +257,7 @@ export function CreateGoalPage() {
                 
                 <h3 className="font-bold">اطلاع‌رسانی به ناظر</h3>
               </div>
-              <p className="text-gray-400">در تاریخ {supervisorCheckDate.toLocaleDateString('fa-IR')}، یک روز قبل از موعد، پیامکی برای ناظر ارسال خواهد شد.</p>
+              <p className="text-gray-400">در تاریخ {supervisorCheckDate.toLocaleDateString('fa-IR')}، یک روز قبل از سررسید هدف، پیامک نظارت برای ناظر ارسال خواهد شد.</p>
             </div>
           </div>
 
@@ -266,9 +266,9 @@ export function CreateGoalPage() {
             <div className="mr-3 text-right">
               <div className="flex items-center gap-2 text-green-500 mb-2">
             
-                <h3 className="font-bold">موعد هدف</h3>
+                <h3 className="font-bold">سررسید هدف</h3>
               </div>
-              <p className="text-gray-400">در تاریخ {deadlineDate.toLocaleDateString('fa-IR')} ناظر باید انجام هدف را تایید کند.</p>
+              <p className="text-gray-400"> ناظر هدف تا پایان روز سررسید ({deadlineDate.toLocaleDateString('fa-IR')}) مهلت دارد که انجام هدف را تایید یا رد کند.</p>
             </div>
           </div>
 
@@ -281,7 +281,7 @@ export function CreateGoalPage() {
               </div>
               <div className="space-y-2">
                 <p className="text-gray-400">در صورت تایید ناظر: مبلغ {formatAmount(parseInt(amountInput))} تومان به شما بازگردانده می‌شود.</p>
-                <p className="text-gray-400">در صورت عدم تایید یا عدم پاسخ ناظر: مبلغ به خیریه اهدا خواهد شد.</p>
+                <p className="text-gray-400">در صورت عدم تایید یا عدم پاسخ ناظر، مبلغ به خیریه اهدا خواهد شد.</p>
               </div>
             </div>
           </div>

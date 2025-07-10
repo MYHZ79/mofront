@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+import { errorTranslations } from './errors';
 import {
   AuthRequest,
   AuthResponse,
@@ -46,7 +47,8 @@ interface ApiResponse<T> {
 async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
   const data = await response.json();
   if (!data.ok && data.error) {
-    toast.error(data.error);
+    const translatedError = errorTranslations[data.error] || data.error;
+    toast.error(translatedError);
   }
   return { ...data, status: response.status }; // Include status
 }

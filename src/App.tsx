@@ -134,11 +134,11 @@ function App() {
                   <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 sm:pb-32">
                     <div className="text-center">
                       <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-shadow">
-                        همین الان انجامش بده
-                        <span className="block text-red-500">یا به خیریه کمک کن</span>
+                        انجامش بده
+                        <span className="block text-red-500">یا پولت رو از دست بده</span>
                       </h1>
                       <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-12">
-                        یک هدف تعیین کن. یک ناظر انتخاب کن. پول بذار روش. انجامش بده یا پولت به خیریه اهدا میشه.
+                        یک هدف تعیین کن. یک ناظر انتخاب کن. تعهد مالی بده. انجامش بده یا پولت به خیریه اهدا میشه.
                         به همین سادگی.
                       </p>
                       <form onSubmit={handleSubmit} className="max-w-md mx-auto">
@@ -166,13 +166,13 @@ function App() {
 
               {/* How It Works */}
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                <h2 className="text-4xl font-bold text-center mb-16">چطور کار می‌کند؟</h2>
-                <div className="grid md:grid-cols-4 gap-12">
+                <h2 className="text-4xl font-bold text-center mb-16">موتیو (Motiv) چطور کار می‌کنه؟</h2>
+                <div className="grid md:grid-cols-3 gap-12">
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
                       <Target className="w-8 h-8" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4">هدف‌گذاری کن</h3>
+                    <h3 className="text-xl font-bold mb-4">هدف‌گذاری</h3>
                     <p className="text-gray-400">
                       مشخص کن چه چیزی می‌خوای و تا کی. دقیق و زمان‌بندی شده تعیینش کن.
                     </p>
@@ -181,27 +181,18 @@ function App() {
                     <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
                       <Shield className="w-8 h-8" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4">ناظر انتخاب کن</h3>
+                    <h3 className="text-xl font-bold mb-4">انتخاب ناظر</h3>
                     <p className="text-gray-400">
-                      یک ناظر معتمد انتخاب کن که پیشرفتت رو تایید کنه. این تضمین می‌کنه که واقعاً به هدفت رسیدی.
+                       یک ناظر معتمد انتخاب کن که پیشرفتت در هدف  رو بررسی کنه. ناظر تایید می‌کنه که آیا واقعاً به هدفت رسیدی یا نه؟
                     </p>
                   </div>
                   <div className="text-center">
                     <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
                       <DollarSign className="w-8 h-8" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4">پول بذار روش</h3>
+                    <h3 className="text-xl font-bold mb-4">تهعد مالی</h3>
                     <p className="text-gray-400">
-                      هر چقدر بیشتر ریسک کنی، انگیزه‌ت بیشتر میشه. اگر به هدفت نرسی، پولت به خیریه میره.
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
-                      <Heart className="w-8 h-8" />
-                    </div>
-                    <h3 className="text-xl font-bold mb-4">تاثیر مثبت</h3>
-                    <p className="text-gray-400">
-                      به هدفت برس و پولت رو پس بگیر، یا با کمک به خیریه تاثیر مثبتی بذار.
+تعهد بده که به هدفت میرسی. اگر به هدفت نرسی، پولت به خیریه اهدا میشه.
                     </p>
                   </div>
                 </div>
@@ -238,8 +229,7 @@ function App() {
                 <div className="bg-red-500 rounded-2xl p-12">
                   <h2 className="text-4xl font-bold mb-6">آماده‌ای تعلل رو کنار بذاری؟</h2>
                   <p className="text-xl mb-8 max-w-2xl mx-auto">
-                    به هزاران نفری بپیوند که با تعهد به هدفشون و نظارت یک فرد معتمد، یا موفق شدن یا به خیریه کمک کردن.
-                  </p>
+                    به هزاران نفری بپیوند که زندگی خودشون رو متحول کردند!                  </p>
                   <button
                   onClick={handleSubmit} 
                   className="px-8 py-4 bg-black rounded-lg font-bold hover:bg-gray-900 transition-colors flex items-center gap-2 mx-auto">
@@ -252,7 +242,7 @@ function App() {
               {/* Footer */}
               <footer className="border-t border-white/10 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                  <p className="text-gray-400">© ۲۰۲۵ همین الان انجامش بده. تمامی حقوق محفوظ است.</p>
+                  <p className="text-gray-400">{new Date().getFullYear()} . تمامی حقوق برای موتیو محفوظ است.</p>
                   <div className="flex items-center gap-2 text-sm text-gray-400">
                     <AlertCircle className="w-4 h-4" />
                     <span>نتایج ممکن است متفاوت باشد. در صورت عدم موفقیت، پول شما به خیریه اهدا خواهد شد.</span>

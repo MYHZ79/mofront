@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
 import { Target, Eye, Calendar, DollarSign, Shield } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { GoalStatusDisplay } from '../components/GoalStatusDisplay';
+import { GoalStatusDisplay, getRowBackgroundClass, getGoalPriority } from '../components/GoalStatusDisplay';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { Goal, GetGoalsRequest, GetSupervisionsRequest } from '../types/api';
@@ -33,13 +33,21 @@ export function GoalsPage() {
         ]);
 
         if (goalsResponse.ok && goalsResponse.data?.goals) {
-          setGoals(goalsResponse.data.goals);
+          // Sort goals by priority (in progress first)
+          const sortedGoals = goalsResponse.data.goals.sort((a, b) => {
+            return getGoalPriority(a) - getGoalPriority(b);
+          });
+          setGoals(sortedGoals);
         } else {
           setError(goalsResponse.error || 'خطا در دریافت اهداف');
         }
 
         if (supervisionsResponse.ok && supervisionsResponse.data?.goals) {
-          setSupervisions(supervisionsResponse.data.goals);
+          // Sort supervisions by priority (in progress first)
+          const sortedSupervisions = supervisionsResponse.data.goals.sort((a, b) => {
+            return getGoalPriority(a) - getGoalPriority(b);
+          });
+          setSupervisions(sortedSupervisions);
         } else {
           // Don't set error for supervisions failure, just log it
           console.error('Failed to load supervisions:', supervisionsResponse.error);
@@ -86,7 +94,10 @@ export function GoalsPage() {
               {data.map((item) => (
                 <tr
                   key={item.goal_id}
-                  className="border-b border-gray-800 hover:bg-gray-800/50 transition-colors cursor-pointer"
+                  className={`
+                    border-b border-gray-800/50 transition-all duration-300 cursor-pointer
+                    ${getRowBackgroundClass(item)}
+                  `}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (item.goal_id !== undefined) {
@@ -94,9 +105,9 @@ export function GoalsPage() {
                     }
                   }}
                 >
-                  <td className="py-4 px-4">{item.goal}</td>
-                  <td className="py-4 px-4">{item.value ? formatAmount(toTomans(item.value)): 'N/A'} تومان</td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-4 font-medium">{item.goal}</td>
+                  <td className="py-4 px-4 text-gray-300">{item.value ? formatAmount(toTomans(item.value)): 'N/A'} تومان</td>
+                  <td className="py-4 px-4 text-gray-300">
                     {item.deadline ? new Date(item.deadline * 1000).toLocaleDateString('fa-IR') : 'N/A'}
                   </td>
                   <td className="py-4 px-4">

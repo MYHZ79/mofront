@@ -8,7 +8,7 @@ type SEOProps = {
 };
 
 export function SEO({ title, description, imageUrl, imageAlt }: SEOProps) {
-  const siteName = 'موتیو';
+  const siteName = 'Motiv';
   const defaultDescription = 'پلتفرم انگیزشی برای رسیدن شما به اهدافتان';
   const defaultImageUrl = 'https://imotiv.ir/og-image.png'; // A default image for social sharing
   const defaultImageAlt = 'Motiv.ir logo';

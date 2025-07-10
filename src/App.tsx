@@ -37,10 +37,11 @@ function App() {
         if (response.ok && response.data) {
           CONFIG.GOAL_DEADLINE.min_goal_hours = response.data.min_goal_hours ?? CONFIG.GOAL_DEADLINE.min_goal_hours;
           CONFIG.GOAL_DEADLINE.max_goal_hours = response.data.max_goal_hours ?? CONFIG.GOAL_DEADLINE.max_goal_hours;
-          CONFIG.GOAL_AMOUNT.min_goal_value = response.data.min_goal_value ?? CONFIG.GOAL_AMOUNT.min_goal_value;
-          CONFIG.GOAL_AMOUNT.max_goal_value = response.data.max_goal_value ?? CONFIG.GOAL_AMOUNT.max_goal_value;
+          CONFIG.GOAL_AMOUNT.min_goal_value = response.data.min_goal_value ? response.data.min_goal_value / 10 : CONFIG.GOAL_AMOUNT.min_goal_value;
+          CONFIG.GOAL_AMOUNT.max_goal_value = response.data.max_goal_value ? response.data.max_goal_value / 10 : CONFIG.GOAL_AMOUNT.max_goal_value;
           CONFIG.OTP_TIMEOUT = response.data.otp_timeout ?? CONFIG.OTP_TIMEOUT;
           CONFIG.SUPERVISION_TIMEOUT_HOURS = response.data.supervision_timeout_hours ?? CONFIG.SUPERVISION_TIMEOUT_HOURS;
+          CONFIG.GOAL_CREATION_FEE = response.data.goal_creation_fee ? response.data.goal_creation_fee / 10 : CONFIG.GOAL_CREATION_FEE;
           setConfigLoaded(true);
         } else {
           toast.error(response.error || 'Failed to load config');

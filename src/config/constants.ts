@@ -2,15 +2,16 @@ export const RIAL_TO_TOMAN_FACTOR = 10;
 
 export const CONFIG = {
   GOAL_DEADLINE: {
-    min_goal_hours: 72, // Default to 3 days * 24 hours
-    max_goal_hours: 1440, // Default to 60 days * 24 hours
+    min_goal_hours: 0,
+    max_goal_hours: 0,
   },
   GOAL_AMOUNT: {
-    min_goal_value: 10_000, // Default (100,000 Rials / 10 = 10,000 Tomans)
-    max_goal_value: 1_000_000, // Default (10,000,000 Rials / 10 = 1,000,000 Tomans)
+    min_goal_value: 0,
+    max_goal_value: 0,
   },
-  OTP_TIMEOUT: 120, // Default
-  SUPERVISION_TIMEOUT_HOURS: 24, // Default
+  OTP_TIMEOUT: 0,
+  SUPERVISION_TIMEOUT_HOURS: 0,
+  GOAL_CREATION_FEE: 0,
 };
 
 export const formatAmount = (amount: number): string => {

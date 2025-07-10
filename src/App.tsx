@@ -138,7 +138,7 @@ function App() {
                         <span className="block text-red-500">یا پولت رو از دست بده</span>
                       </h1>
                       <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-12">
-                        یک هدف تعیین کن. یک ناظر انتخاب کن. تعهد مالی بده. انجامش بده یا پولت به خیریه اهدا میشه.
+                        یک هدف تعیین کن. یک ناظر انتخاب کن. تعهد مالی بده. به هدفت برس یا پولت به خیریه اهدا میشه.
                         به همین سادگی.
                       </p>
                       <form onSubmit={handleSubmit} className="max-w-md mx-auto">

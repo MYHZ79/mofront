@@ -73,18 +73,18 @@ export function GoalsPage() {
         </div>
         <div className="flex-1 flex items-center justify-between">
           <h2 className="table-title">{title}</h2>
-          <div className="flex items-center gap-2 text-sm text-gray-400">
+          {/* <div className="flex items-center gap-2 text-sm text-gray-400">
             <TrendingUp className="w-4 h-4" />
             <span>مرتب‌سازی: {getSortLabel(sortHook.sortConfig.key, sortHook.sortConfig.direction)}</span>
-          </div>
+          </div> */}
         </div>
       </div>
       
       {sortHook.sortedData.length === 0 ? (
         <EmptyState
           title={title === 'اهداف من' ? 'هنوز هدفی ندارید' : 'هنوز نظارتی ندارید'}
-          message={title === 'اهداف من' ? 'اولین هدف خود را ایجاد کنید و شروع به پیشرفت کنید.' : 'هنوز برای نظارت بر هدفی انتخاب نشده‌اید.'}
-          actionText={title === 'اهداف من' ? 'ایجاد هدف جدید' : undefined}
+          message={title === 'اهداف من' ? '' : 'شما تا به حال برای نظارت بر هدفی انتخاب نشده‌اید.'}
+          actionText={title === 'اهداف من' ? 'ایجاد هدف' : undefined}
           onAction={title === 'اهداف من' ? () => navigate('/create-goal') : undefined}
           icon={title === 'اهداف من' ? <Target className="w-10 h-10 text-gray-500" /> : <Shield className="w-10 h-10 text-gray-500" />}
         />

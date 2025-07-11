@@ -138,8 +138,8 @@ function App() {
                         <span className="block text-red-500">یا پولت رو از دست بده</span>
                       </h1>
                       <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto mb-12">
-                        یک هدف تعیین کن. یک ناظر انتخاب کن. تعهد مالی بده. به هدفت برس یا پولت به خیریه اهدا میشه.
-                        به همین سادگی.
+                        یک هدف تعیین کن. یک ناظر انتخاب کن. تعهد مالی بده. <br />به هدفت برس و پولت رو پس بگیر <span className="text-red-500">یا</span> پولت به خیریه اهدا میشه.
+                        
                       </p>
                       <form onSubmit={handleSubmit} className="max-w-md mx-auto">
                         <div className="flex flex-col sm:flex-row gap-4">
@@ -174,7 +174,7 @@ function App() {
                     </div>
                     <h3 className="text-xl font-bold mb-4">هدف‌گذاری</h3>
                     <p className="text-gray-400">
-                      مشخص کن چه چیزی می‌خوای و تا کی. دقیق و زمان‌بندی شده تعیینش کن.
+                      هدفت رو تعیین کن و موعد رسیدن بهش رو مشخص کن. انتخاب هدف محدودیتی نداره و میتونه هرچیزی باشه.
                     </p>
                   </div>
                   <div className="text-center">
@@ -192,7 +192,7 @@ function App() {
                     </div>
                     <h3 className="text-xl font-bold mb-4">تهعد مالی</h3>
                     <p className="text-gray-400">
-تعهد بده که به هدفت میرسی. اگر به هدفت نرسی، پولت به خیریه اهدا میشه.
+تعهد بده که به هدفت میرسی. اگر به هدفت برسی پولت رو پس میگیری. در غیر اینصورت پولت به خیریه اهدا میشه.
                     </p>
                   </div>
                 </div>
@@ -229,7 +229,7 @@ function App() {
                 <div className="bg-red-500 rounded-2xl p-12">
                   <h2 className="text-4xl font-bold mb-6">آماده‌ای تعلل رو کنار بذاری؟</h2>
                   <p className="text-xl mb-8 max-w-2xl mx-auto">
-                    به هزاران نفری بپیوند که زندگی خودشون رو متحول کردند!                  </p>
+                    به هزاران نفری بپیوندید که زندگی خودشون رو متحول کردند!                  </p>
                   <button
                   onClick={handleSubmit} 
                   className="px-8 py-4 bg-black rounded-lg font-bold hover:bg-gray-900 transition-colors flex items-center gap-2 mx-auto">
@@ -242,11 +242,11 @@ function App() {
               {/* Footer */}
               <footer className="border-t border-white/10 py-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                  <p className="text-gray-400">{new Date().getFullYear()} . تمامی حقوق برای موتیو محفوظ است.</p>
-                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <p className="text-gray-400">تمامی حقوق برای موتیو محفوظ است.</p>
+                  {/* <div className="flex items-center gap-2 text-sm text-gray-400">
                     <AlertCircle className="w-4 h-4" />
                     <span>نتایج ممکن است متفاوت باشد. در صورت عدم موفقیت، پول شما به خیریه اهدا خواهد شد.</span>
-                  </div>
+                  </div> */}
                 </div>
               </footer>
               </div>

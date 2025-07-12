@@ -212,7 +212,7 @@ export function CreateGoalPage() {
 
   const renderTimeline = () => {
     const deadlineDate = new Date(goalData.deadline);
-    const supervisorCheckDate = new Date(deadlineDate.getTime() - (24 * 60 * 60 * 1000));
+    const supervisorCheckDate = new Date(deadlineDate.getTime() - (CONFIG.SUPERVISION_TIMEOUT_HOURS * 60 * 60 * 1000));
 
     return (
       <div className="space-y-8">
@@ -225,7 +225,7 @@ export function CreateGoalPage() {
               <div className="flex items-center gap-2 text-red-500 mb-2">
                 <h3 className="font-bold">ثبت هدف</h3>
               </div>
-              <p className="text-gray-400">شما هدف «{goalData.title}» را با مبلغ {formatAmount(parseInt(amountInput))} تومان ثبت میکنید.</p>
+              <p className="text-gray-400">شما هدف «{goalData.title}» را با مبلغ تعهد مالی {formatAmount(parseInt(amountInput))} تومان ثبت میکنید.</p>
             </div>
           </div>
 
@@ -257,7 +257,7 @@ export function CreateGoalPage() {
                 
                 <h3 className="font-bold">اطلاع‌رسانی به ناظر</h3>
               </div>
-              <p className="text-gray-400">در تاریخ {supervisorCheckDate.toLocaleDateString('fa-IR')}، یک روز قبل از سررسید هدف، پیامک نظارت برای ناظر ارسال خواهد شد.</p>
+              <p className="text-gray-400">در تاریخ {supervisorCheckDate.toLocaleDateString('fa-IR')} ({CONFIG.SUPERVISION_TIMEOUT_HOURS} ساعت قبل از سررسید هدف) پیامک نظارت برای ناظر ارسال خواهد شد.</p>
             </div>
           </div>
 
@@ -280,8 +280,8 @@ export function CreateGoalPage() {
                 <h3 className="font-bold">نتیجه</h3>
               </div>
               <div className="space-y-2">
-                <p className="text-gray-400">در صورت تایید ناظر: مبلغ {formatAmount(parseInt(amountInput))} تومان به شما بازگردانده می‌شود.</p>
-                <p className="text-gray-400">در صورت عدم تایید یا عدم پاسخ ناظر، مبلغ به خیریه اهدا خواهد شد.</p>
+                <p className="text-gray-400"><span className="text-green-500">در صورت تایید انجام هدف توسط ناظر:</span><br /> مبلغ {formatAmount(parseInt(amountInput)-CONFIG.GOAL_CREATION_FEE)} تومان به حساب شما بازگردانده می‌شود. (کارمزد ثبت هدف: {formatAmount(CONFIG.GOAL_CREATION_FEE)} تومان)</p>
+                <p className="text-gray-400"><span className="text-red-500">در صورت عدم رد انجام هدف یا عدم پاسخ توسط ناظر: </span><br />این مبلغ توسط موتیو به خیریه اهدا خواهد شد.</p>
               </div>
             </div>
           </div>

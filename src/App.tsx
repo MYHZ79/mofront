@@ -127,7 +127,7 @@ function App() {
                 {/* Hero Section */}
                 <div className="relative overflow-hidden">
                   <img
-                    src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=2940"
+                    src="/images/hero-background.jpg"
                     alt="Background"
                     className="absolute inset-0 w-full h-full object-cover opacity-30"
                   />

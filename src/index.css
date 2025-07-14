@@ -1,14 +1,8 @@
+@import '../public/fonts/vazirmatn-fd/Vazirmatn-FD-font-face.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@font-face {
-  font-family: 'Vazirmatn FD';
-  src: url('/fonts/vazirmatn-fd/Vazirmatn-FD-font-face.css') format('woff2-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
 
 body {
   font-family: 'Vazirmatn FD', system-ui, sans-serif;

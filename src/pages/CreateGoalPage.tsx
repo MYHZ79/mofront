@@ -258,7 +258,7 @@ export function CreateGoalPage() {
                 
                 <h3 className="font-bold">اطلاع‌رسانی به ناظر</h3>
               </div>
-              <p className="text-gray-400">در تاریخ {supervisorCheckDate.toLocaleDateString('fa-IR')} ({CONFIG.SUPERVISION_TIMEOUT_HOURS} ساعت قبل از سررسید هدف) پیامک نظارت برای ناظر ارسال خواهد شد.</p>
+              <p className="text-gray-400">در پایان روز {supervisorCheckDate.toLocaleDateString('fa-IR')} ({CONFIG.SUPERVISION_TIMEOUT_HOURS} ساعت قبل از سررسید هدف) پیامک نظارت برای ناظر ارسال خواهد شد.</p>
             </div>
           </div>
 
@@ -288,7 +288,7 @@ export function CreateGoalPage() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-6 mt-8">
+        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-4 mt-8">
           <div className="flex items-start gap-4">
             <div className="flex-1">
               <div className="flex items-start gap-3">
@@ -300,7 +300,7 @@ export function CreateGoalPage() {
                   className="mt-1 w-5 h-5 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
                 />
                 <label htmlFor="consent" className="text-sm text-gray-300 leading-relaxed cursor-pointer">
-                  <span className="font-medium text-blue-300">تأیید می‌کنم که مراحل ثبت هدف را مطالعه کرده‌ام و با شرایط موافقم.</span>
+                  <span className="font-medium text-blue-300">تأیید می‌کنم که مراحل انجام هدف را مطالعه کرده‌ام و با شرایط موافقم. همچنین صحت اطلاعات وارد شده مورد تایید من است.</span>
                 </label>
               </div>
             </div>
@@ -336,8 +336,8 @@ export function CreateGoalPage() {
                   <div className="text-right">
                     <h3 className="font-bold text-blue-400 mb-2">تعریف هدف</h3>
                     <p className="text-blue-200 text-sm leading-relaxed">
-                      هدفت رو به صورت واضح و مشخص بنویس. مثلاً "ترک سیگار"، "کاهش ۱۰ کیلو وزن"، "تمرین روزانه ورزش" یا "خواندن ۲۰ کتاب". 
-                      هدف باید قابل اندازه‌گیری و واقع‌بینانه باشه تا ناظر بتونه راحت تشخیص بده که انجام شده یا نه.
+                      هدفت رو به صورت واضح و مشخص بنویس. مثلاً "خواندن 3 کتاب"، "کاهش ۱۰ کیلو وزن"، "ترک سیگار" یا "تمرین روزانه ورزش". 
+                      هدف باید واقع‌بینانه باشه تا ناظر بتونه به راحتی وضعیت انجامش رو تشخیص بده.
                     </p>
                   </div>
                 </div>
@@ -379,15 +379,15 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">کی می‌خوای به هدفت برسی؟</h2>
+              <h2 className="text-3xl font-bold text-white mb-4">تا کی باید به هدفت برسی؟ </h2>
               <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6">
                 <div className="flex items-start gap-3">
                   <Calendar className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
                   <div className="text-right">
-                    <h3 className="font-bold text-green-400 mb-2">تعیین مهلت</h3>
+                    <h3 className="font-bold text-green-400 mb-2">تعیین تاریخ سررسید</h3>
                     <p className="text-green-200 text-sm leading-relaxed">
                       یک تاریخ واقع‌بینانه برای رسیدن به هدفت انتخاب کن. نه خیلی کوتاه که غیرممکن باشه، نه خیلی طولانی که انگیزه‌ت رو از دست بدی. 
-                      در روز سررسید، ناظر انتخابی تو باید تأیید کنه که آیا به هدفت رسیدی یا نه.
+                      در روز سررسید، ناظر انتخابی تو باید تأیید کنه که آیا به هدفت رسیدی یا نه؟
                     </p>
                   </div>
                 </div>
@@ -432,14 +432,14 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">چقدر روش شرط می‌بندی؟</h2>
+              <h2 className="text-3xl font-bold text-white mb-4">چقدر برات ارزش داره؟</h2>
               <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
                 <div className="flex items-start gap-3">
                   <DollarSign className="w-6 h-6 text-yellow-500 flex-shrink-0 mt-1" />
                   <div className="text-right">
                     <h3 className="font-bold text-yellow-400 mb-2">تعهد مالی</h3>
                     <p className="text-yellow-200 text-sm leading-relaxed">
-                      مبلغی رو انتخاب کن که برات مهم باشه و انگیزه‌ت رو برای رسیدن به هدف بالا ببره. اگر موفق بشی، پولت برمی‌گرده. 
+                      مبلغ رو طوری انتخاب کن که انگیزه‌ت برای رسیدن به هدف رو بالا ببره. اگر موفق بشی، پولت برمی‌گرده. 
                       اگر موفق نشی یا ناظر تأیید نکنه، این مبلغ به خیریه اهدا میشه. پس یه مبلغ انتخاب کن که واقعاً برات مهم باشه!
                     </p>
                   </div>
@@ -468,9 +468,9 @@ export function CreateGoalPage() {
                   {numberToPersianWords(Number(amountInput))} تومان
                 </p>
               )}
-              <p className="mt-2 text-sm text-gray-400">
+              {/* <p className="mt-2 text-sm text-gray-400">
                 مبلغ باید بین {formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و {formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد.
-              </p>
+              </p> */}
             </div>
           </div>
         );
@@ -479,14 +479,14 @@ export function CreateGoalPage() {
         return (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">کی قراره روت نظارت کنه؟</h2>
+              <h2 className="text-3xl font-bold text-white mb-4">چه کسی باید پیشرفتت رو بررسی کنه؟</h2>
               <div className="bg-purple-500/10 border border-purple-500/20 rounded-xl p-6">
                 <div className="flex items-start gap-3">
                   <Shield className="w-6 h-6 text-purple-500 flex-shrink-0 mt-1" />
                   <div className="text-right">
                     <h3 className="font-bold text-purple-400 mb-2">انتخاب ناظر</h3>
                     <p className="text-purple-200 text-sm leading-relaxed">
-                      یک نفر معتمد رو انتخاب کن که بتونه صادقانه قضاوت کنه آیا به هدفت رسیدی یا نه. می‌تونه دوست، خانواده، همکار یا حتی مربی باشه. 
+                      یک فرد معتمد رو انتخاب کن که بتونه صادقانه قضاوت کنه آیا به هدفت رسیدی یا نه؟ می‌تونه دوست، خانواده، همکار یا حتی مربی باشه. 
                       مهم اینه که این شخص بتونه پیشرفت تو رو ببینه و در روز سررسید تصمیم بگیره. ناظر باید شماره موبایل فعال داشته باشه.
                     </p>
                   </div>
@@ -511,18 +511,6 @@ export function CreateGoalPage() {
               {errors.supervisor && (
                 <p className="mt-1 text-sm text-red-500">{errors.supervisor}</p>
               )}
-              <div className="mt-4 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
-                <div className="flex gap-2">
-                  <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0" />
-                  <div className="text-sm text-yellow-200">
-                    <p className="font-medium mb-1">نکات مهم:</p>
-                    <ul className="list-disc list-inside space-y-1">
-                      <li>در روز سررسید، پیامکی برای ناظر ارسال خواهد شد تا هدف را تایید یا رد کند.</li>
-                      <li>اگر ناظر در روز سررسید هدف را تایید یا رد نکند، مبلغ به صورت خودکار به خیریه اهدا خواهد شد.</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         );

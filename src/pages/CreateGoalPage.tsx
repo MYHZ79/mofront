@@ -80,6 +80,7 @@ export function CreateGoalPage() {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const { user, isLoading } = useAuth();
   console.log(user)
+  const [consentChecked, setConsentChecked] = useState(false);
   const [goalData, setGoalData] = useState<GoalData>({
     title: initialTitle,
     description: '',
@@ -289,7 +290,12 @@ export function CreateGoalPage() {
 
         <button
           onClick={handleSubmit}
-          className="w-full bg-red-500 text-white py-4 rounded-lg font-bold hover:bg-red-600 transition-colors flex items-center justify-center gap-2 mt-8"
+          disabled={!consentChecked}
+          className={`w-full py-4 rounded-lg font-bold transition-colors flex items-center justify-center gap-2 mt-8 ${
+            consentChecked 
+              ? 'bg-red-500 text-white hover:bg-red-600 cursor-pointer' 
+              : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+          }`}
         >
           پرداخت و شروع چالش
           <DollarSign className="w-5 h-5" />
@@ -518,6 +524,27 @@ export function CreateGoalPage() {
                     </p>
                   </div>
                 </div>
+              </div>
+            </div>
+            
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700/50 mt-6">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="consent"
+                  checked={consentChecked}
+                  onChange={(e) => setConsentChecked(e.target.checked)}
+                  className="mt-1 w-5 h-5 text-red-500 bg-gray-700 border-gray-600 rounded focus:ring-red-500 focus:ring-2"
+                />
+                <label htmlFor="consent" className="text-sm text-gray-300 leading-relaxed cursor-pointer">
+                  <span className="font-medium text-white">تأیید می‌کنم که:</span>
+                  <ul className="list-disc list-inside mt-2 space-y-1 text-gray-400">
+                    <li>قوانین و شرایط استفاده از موتیو را مطالعه کرده و می‌پذیرم</li>
+                    <li>در صورت عدم موفقیت در رسیدن به هدف یا عدم تأیید توسط ناظر، مبلغ پرداختی به خیریه اهدا خواهد شد</li>
+                    <li>مسئولیت انتخاب ناظر مناسب و ارتباط با وی بر عهده من است</li>
+                    <li>اطلاعات وارد شده صحیح و کامل است</li>
+                  </ul>
+                </label>
               </div>
             </div>
             

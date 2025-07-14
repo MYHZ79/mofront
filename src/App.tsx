@@ -239,20 +239,20 @@ function App() {
                 </div>
               </div>
 
-              {/* Footer */}
-              <footer className="border-t border-white/10 py-8">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                  <p className="text-gray-400">تمامی حقوق برای موتیو محفوظ است.</p>
-                  {/* <div className="flex items-center gap-2 text-sm text-gray-400">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>نتایج ممکن است متفاوت باشد. در صورت عدم موفقیت، پول شما به خیریه اهدا خواهد شد.</span>
-                  </div> */}
-                </div>
-              </footer>
               </div>
             } />
-        </Routes>
+          </Routes>
         </AuthProvider> {/* Correctly close AuthProvider */}
+        {/* Footer */}
+        <footer className="border-t border-white/10 py-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-400">تمامی حقوق برای موتیو محفوظ است.</p>
+            {/* <div className="flex items-center gap-2 text-sm text-gray-400">
+              <AlertCircle className="w-4 h-4" />
+              <span>نتایج ممکن است متفاوت باشد. در صورت عدم موفقیت، پول شما به خیریه اهدا خواهد شد.</span>
+            </div> */}
+          </div>
+        </footer>
       </main>
     </div>
   );

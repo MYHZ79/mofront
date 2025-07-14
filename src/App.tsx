@@ -165,33 +165,50 @@ function App() {
                 </div>
 
               {/* How It Works */}
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-                <h2 className="text-4xl font-bold text-center mb-16">موتیو (Motiv) چطور کار می‌کنه؟</h2>
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative overflow-hidden">
+                {/* Background decorative elements */}
+                <div className="absolute top-10 left-10 w-32 h-32 bg-red-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-purple-500/3 rounded-full blur-3xl"></div>
+                
+                <div className="relative z-10">
+                  <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 leading-tight">
+                    <span className="brand-name-animated inline-block bg-gradient-to-r from-red-500 via-red-400 to-red-600 bg-clip-text text-transparent font-black tracking-wide transform hover:scale-105 transition-all duration-500 cursor-default">
+                      موتیو
+                    </span>
+                    <span className="text-gray-400 font-light mx-2">(</span>
+                    <span className="brand-name-english inline-block bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent font-bold italic tracking-wider transform hover:scale-105 transition-all duration-500 cursor-default">
+                      Motiv
+                    </span>
+                    <span className="text-gray-400 font-light mx-2">)</span>
+                    <span className="text-white font-medium">چطور کار می‌کنه؟</span>
+                  </h2>
+                </div>
                 <div className="grid md:grid-cols-3 gap-12">
                   <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
-                      <Target className="w-8 h-8" />
+                    <div className="w-20 h-20 mx-auto mb-8 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-red-500/25 transform hover:scale-110 hover:rotate-3 transition-all duration-500 group">
+                      <Target className="w-10 h-10 text-white group-hover:scale-110 transition-transform duration-300" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4">هدف‌گذاری</h3>
-                    <p className="text-gray-400">
+                    <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">هدف‌گذاری</h3>
+                    <p className="text-gray-400 leading-relaxed text-lg">
                       هدفت رو تعیین کن و موعد رسیدن بهش رو مشخص کن. انتخاب هدف محدودیتی نداره و میتونه هرچیزی باشه.
                     </p>
                   </div>
                   <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
-                      <Shield className="w-8 h-8" />
+                    <div className="w-20 h-20 mx-auto mb-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/25 transform hover:scale-110 hover:rotate-3 transition-all duration-500 group">
+                      <Shield className="w-10 h-10 text-white group-hover:scale-110 transition-transform duration-300" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4">انتخاب ناظر</h3>
-                    <p className="text-gray-400">
+                    <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">انتخاب ناظر</h3>
+                    <p className="text-gray-400 leading-relaxed text-lg">
                        یک ناظر معتمد انتخاب کن که پیشرفتت در هدف  رو بررسی کنه. ناظر تایید می‌کنه که آیا واقعاً به هدفت رسیدی یا نه؟
                     </p>
                   </div>
                   <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center">
-                      <DollarSign className="w-8 h-8" />
+                    <div className="w-20 h-20 mx-auto mb-8 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-green-500/25 transform hover:scale-110 hover:rotate-3 transition-all duration-500 group">
+                      <DollarSign className="w-10 h-10 text-white group-hover:scale-110 transition-transform duration-300" />
                     </div>
-                    <h3 className="text-xl font-bold mb-4">تهعد مالی</h3>
-                    <p className="text-gray-400">
+                    <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-white to-gray-200 bg-clip-text text-transparent">تعهد مالی</h3>
+                    <p className="text-gray-400 leading-relaxed text-lg">
 تعهد بده که به هدفت میرسی. اگر به هدفت برسی پولت رو پس میگیری. در غیر اینصورت پولت به خیریه اهدا میشه.
                     </p>
                   </div>

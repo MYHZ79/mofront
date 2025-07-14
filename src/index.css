@@ -72,3 +72,54 @@ body {
   font-weight: bold;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
+
+/* Brand name animations */
+.brand-name-animated {
+  animation: brandGlow 3s ease-in-out infinite alternate;
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.brand-name-english {
+  animation: brandGlowSubtle 4s ease-in-out infinite alternate;
+  text-shadow: 0 0 10px rgba(156, 163, 175, 0.2);
+}
+
+.brand-name-header {
+  text-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+  animation: brandPulse 2s ease-in-out infinite;
+}
+
+.brand-name-english-header {
+  text-shadow: 0 0 8px rgba(156, 163, 175, 0.1);
+}
+
+@keyframes brandGlow {
+  0% {
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.3), 0 0 30px rgba(239, 68, 68, 0.1);
+    filter: brightness(1);
+  }
+  100% {
+    text-shadow: 0 0 25px rgba(239, 68, 68, 0.5), 0 0 40px rgba(239, 68, 68, 0.2);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes brandGlowSubtle {
+  0% {
+    text-shadow: 0 0 10px rgba(156, 163, 175, 0.2);
+    filter: brightness(1);
+  }
+  100% {
+    text-shadow: 0 0 15px rgba(156, 163, 175, 0.3);
+    filter: brightness(1.05);
+  }
+}
+
+@keyframes brandPulse {
+  0%, 100% {
+    text-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  }
+}

@@ -51,7 +51,7 @@ export function Header({ onShowAuth }: HeaderProps) {
           <div className="flex items-center gap-8">
             <Link 
               to="/" 
-              className="flex items-center gap-2 group relative"
+              className="flex items-center gap-3 group relative"
               onMouseEnter={() => {
                 const logo = document.querySelector('.logo-animation');
                 if (logo) logo.classList.add('animate-pulse');
@@ -61,11 +61,15 @@ export function Header({ onShowAuth }: HeaderProps) {
                 if (logo) logo.classList.remove('animate-pulse');
               }}
             >
-              <div className="logo-animation w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:shadow-red-500/30 transition-all duration-300">
+              <div className="logo-animation w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-red-500/20 group-hover:shadow-red-500/40 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3">
                 <Goal className="w-6 h-6 text-white transform group-hover:scale-110 transition-transform" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              <span className="brand-name-header text-3xl font-black bg-gradient-to-r from-red-500 via-red-400 to-red-600 bg-clip-text text-transparent tracking-wide transform group-hover:scale-105 transition-all duration-500">
                 موتیو
+              </span>
+              <span className="brand-name-english-header text-lg font-bold bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent italic tracking-wider transform group-hover:scale-105 transition-all duration-500 opacity-75">
+                <span className="text-gray-400 font-light">(</span>
+                Motiv<span className="text-gray-400 font-light">)</span>
               </span>
             </Link>
 

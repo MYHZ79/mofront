@@ -556,6 +556,68 @@ export function CreateGoalPage() {
             </div>
           </div>
         );
+
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-white mb-4">آماده‌ای شروع کنی؟</h2>
+              <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-6">
+                <div className="flex items-start gap-3">
+                  <ListTodo className="w-6 h-6 text-red-500 flex-shrink-0 mt-1" />
+                  <div className="text-right">
+                    <h3 className="font-bold text-red-400 mb-2">مرور نهایی</h3>
+                    <p className="text-red-200 text-sm leading-relaxed">
+                      همه چیز آماده‌ست! حالا وقتشه که تعهدت رو نهایی کنی. بعد از پرداخت، هدفت فعال میشه و باید تا روز سررسید بهش برسی. 
+                      موفقیت یا شکست، انتخاب با توئه. آماده‌ای این چالش رو بپذیری؟
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="bg-white/5 rounded-lg p-4 border border-white/10 text-center">
+              <div className="flex justify-center">
+                <h3 className="text-xl font-bold mb-6 mt-6 flex"><ListTodo className="text-yellow-500 ml-1 flex" />مراحل انجام هدف</h3>
+              </div>
+              {renderTimeline()}
+            </div>
+            
+            <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Check className="w-5 h-5 text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      id="consent"
+                      checked={consentChecked}
+                      onChange={(e) => setConsentChecked(e.target.checked)}
+                      className="mt-1 w-5 h-5 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                    <label htmlFor="consent" className="text-sm text-gray-300 leading-relaxed cursor-pointer">
+                      <span className="font-medium text-blue-300">تأیید می‌کنم که اطلاعات بالا را مطالعه کرده‌ام و با شرایط موافقم.</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handleSubmit}
+              disabled={!consentChecked}
+              className={`w-full py-4 rounded-lg font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+                consentChecked 
+                  ? 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/20 hover:shadow-red-500/30 transform hover:scale-[1.02]' 
+                  : 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-60'
+              }`}
+            >
+              <DollarSign className="w-5 h-5" />
+              پرداخت و شروع چالش
+            </button>
+          </div>
+        );
     }
   };
 

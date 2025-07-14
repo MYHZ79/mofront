@@ -104,7 +104,7 @@ function App() {
           <Header onShowAuth={() => setShowAuthModal(true)} />
           <Toaster position="top-center" />
           <Routes>
-            <Route path="/create-goal" element={<ProtectedRoute element={<CreateGoalPage />} />} />
+            <Route path="/create-goal" element={<ProtectedRoute element={<CreateGoalPage configLoaded={configLoaded} />} />} />
             <Route path="/goals" element={<ProtectedRoute element={<GoalsPage />} />} />
             <Route path="/goals/:id" element={<ProtectedRoute element={<GoalDetailsPage />} />} />
             <Route path="/supervisions/:id" element={<ProtectedRoute element={<SupervisionPage />} />} />

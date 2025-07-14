@@ -5,11 +5,14 @@ import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
 import toast from 'react-hot-toast';
-import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToPersianWords, toRials, toTomans } from '../config/constants';
+import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToPersianWords, toRials, toTomans, DayObject, toGregorianDate, toPersianDate } from '../config/constants';
 import { api } from '../config/api';
-import jalali from 'jalali-moment';
 import { useAuth } from '../hooks/useAuth'; // Import useAuth
 import { SetGoalRequest } from '../types/api';
+
+interface CreateGoalPageProps {
+  configLoaded: boolean;
+}
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
@@ -20,26 +23,6 @@ interface GoalData {
   amount: string;
   supervisor: string;
 }
-
-interface DayObject {
-  year: number;
-  month: number;
-  day: number;
-}
-
-const toGregorianDate = (day: DayObject): Date => {
-  const jalaliDate = jalali.from(`${day.year}-${day.month}-${day.day}`, 'fa','YYYY/MM/DD');
-  return jalaliDate.toDate();
-};
-
-const toPersianDate = (date: Date): DayObject => {
-  const jalaliDate = jalali(date);
-  return {
-    year: jalaliDate.jYear(),
-    month: jalaliDate.jMonth() + 1,
-    day: jalaliDate.jDate()
-  };
-};
 
 const normalizePhoneNumber = (phone: string | undefined | null): string => {
   if (!phone) return '';
@@ -52,46 +35,62 @@ const normalizePhoneNumber = (phone: string | undefined | null): string => {
 };
 
 const getMinMaxDates = () => {
-  const today = new Date();
-  const minDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.min_goal_hours * 60 * 60 * 1000));
-  minDate.setHours(23, 59, 59, 999); // Round minDate to the end of the day
+  const now = new Date();
+  const iranOffsetMinutes = 3.5 * 60;
+  const localOffsetMinutes = now.getTimezoneOffset();
+  const utcTime = now.getTime() + (localOffsetMinutes * 60 * 1000);
+  const iranCurrentTime = new Date(utcTime + (iranOffsetMinutes * 60 * 1000));
 
-  const maxDate = new Date(today.getTime() + (CONFIG.GOAL_DEADLINE.max_goal_hours * 60 * 60 * 1000));
-  maxDate.setDate(maxDate.getDate() - 1); // Set maxDate to the day before
-  maxDate.setHours(23, 59, 59, 999); // Round maxDate to the end of the day
+  // Calculate the exact timestamps for min and max allowed deadlines
+  const minAllowedTimestamp = iranCurrentTime.getTime() + (CONFIG.GOAL_DEADLINE.min_goal_hours * 60 * 60 * 1000);
+  const maxAllowedTimestamp = iranCurrentTime.getTime() + (CONFIG.GOAL_DEADLINE.max_goal_hours * 60 * 60 * 1000);
+
+  // The minimum selectable date in the picker should be the day that contains minAllowedTimestamp
+  const minDateForPicker = new Date(minAllowedTimestamp);
+  // The maximum selectable date in the picker should be the day that contains maxAllowedTimestamp
+  const maxDateForPicker = new Date(maxAllowedTimestamp);
 
   return {
-    min: toPersianDate(minDate),
-    max: toPersianDate(maxDate)
+    min: toPersianDate(minDateForPicker),
+    max: toPersianDate(maxDateForPicker)
   };
 };
 
-const getDefaultDate = (minDate: DayObject): DayObject => {
-  return minDate;
-};
-
-export function CreateGoalPage() {
+export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const initialTitle = location.state?.goalTitle || '';
-  const { min: minimumDate, max: maximumDate } = getMinMaxDates();
-  const defaultDate = minimumDate; // getDefaultDate is no longer needed as it just returned minimumDate
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const { user, isLoading } = useAuth();
-  console.log(user)
   const [consentChecked, setConsentChecked] = useState(false);
   const [goalData, setGoalData] = useState<GoalData>({
     title: initialTitle,
     description: '',
-    deadline: toGregorianDate(minimumDate).toISOString().split('T')[0],
+    deadline: '', // Initialize empty, will be set in useEffect
     amount: '',
     supervisor: '',
   });
   
-  const [selectedDay, setSelectedDay] = useState<DayObject>(minimumDate);
+  const [selectedDay, setSelectedDay] = useState<DayObject | null>(null); // Initialize null
   const [errors, setErrors] = useState<Partial<GoalData>>({});
   const [amountInput, setAmountInput] = useState('');
+  const [minimumDate, setMinimumDate] = useState<DayObject | null>(null);
+  const [maximumDate, setMaximumDate] = useState<DayObject | null>(null);
+
+  useEffect(() => {
+    if (configLoaded) {
+      const { min, max } = getMinMaxDates();
+      setMinimumDate(min);
+      setMaximumDate(max);
+      // Set initial deadline to the minimum allowed date
+      setGoalData(prev => ({
+        ...prev,
+        deadline: toGregorianDate(min).toISOString().split('T')[0],
+      }));
+      setSelectedDay(min);
+    }
+  }, [configLoaded]);
 
   const validateStep = (step: Step): boolean => {
     const newErrors: Partial<GoalData> = {};
@@ -109,7 +108,9 @@ export function CreateGoalPage() {
         } else {
           const date = new Date(goalData.deadline);
           if (!validateDeadline(date)) {
-            newErrors.deadline = `تاریخ باید بین ${Math.floor(CONFIG.GOAL_DEADLINE.min_goal_hours / 24)+1} تا ${Math.floor(CONFIG.GOAL_DEADLINE.max_goal_hours / 24)+1} روز آینده باشد`;
+            const minDays = Math.ceil(CONFIG.GOAL_DEADLINE.min_goal_hours / 24);
+            const maxDays = Math.floor(CONFIG.GOAL_DEADLINE.max_goal_hours / 24);
+            newErrors.deadline = `تاریخ باید بین ${minDays} تا ${maxDays+1} روز آینده باشد`;
           }
         }
         break;
@@ -398,31 +399,33 @@ export function CreateGoalPage() {
               <label className="block text-lg font-bold mb-2">تاریخ سررسید</label>
               <div className="relative">
                 <Calendar className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
-                <DatePicker
-                  value={selectedDay}
-                  onChange={(day) => {
-                    if (day) {
-                      setSelectedDay(day);
-                      const gregorianDate = toGregorianDate(day);
-                      setGoalData({
-                        ...goalData,
-                        deadline: gregorianDate.toISOString().split('T')[0],
-                      });
-                    }
-                  }}
-                  inputPlaceholder="انتخاب تاریخ"
-                  colorPrimary="#EF4444"
-                  locale="fa"
-                  minimumDate={minimumDate}
-                  maximumDate={maximumDate}
-                  shouldHighlightWeekends
-                />
+                {minimumDate && maximumDate && selectedDay && (
+                  <DatePicker
+                    value={selectedDay}
+                    onChange={(day) => {
+                      if (day) {
+                        setSelectedDay(day);
+                        const gregorianDate = toGregorianDate(day);
+                        setGoalData({
+                          ...goalData,
+                          deadline: gregorianDate.toISOString().split('T')[0],
+                        });
+                      }
+                    }}
+                    inputPlaceholder="انتخاب تاریخ"
+                    colorPrimary="#EF4444"
+                    locale="fa"
+                    minimumDate={minimumDate}
+                    maximumDate={maximumDate}
+                    shouldHighlightWeekends
+                  />
+                )}
               </div>
               {errors.deadline && (
                 <p className="mt-1 text-sm text-red-500">{errors.deadline}</p>
               )}
               <p className="mt-2 text-sm text-gray-400">
-                تاریخ سررسید باید بین {Math.floor(CONFIG.GOAL_DEADLINE.min_goal_hours / 24)+1} تا {Math.floor(CONFIG.GOAL_DEADLINE.max_goal_hours / 24)+1} روز آینده باشد.
+                تاریخ سررسید باید بین {Math.ceil(CONFIG.GOAL_DEADLINE.min_goal_hours / 24)} تا {Math.ceil(CONFIG.GOAL_DEADLINE.max_goal_hours / 24)+1} روز آینده باشد.
               </p>
             </div>
           </div>

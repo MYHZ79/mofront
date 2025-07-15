@@ -418,6 +418,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
                     minimumDate={minimumDate}
                     maximumDate={maximumDate}
                     shouldHighlightWeekends
+                    calendarPopperPosition="top"
                   />
                 )}
               </div>

@@ -35,6 +35,7 @@ import {
   ViewGoalResponse,
   User,
   UserDO,
+  GetCharitiesResponse, // Added
 } from '../types/api';
 
 const API_BASE_URL = 'https://imotiv.ir/apidev';

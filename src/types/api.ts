@@ -241,14 +241,6 @@ export interface GetCharitiesResponse {
 	charities: Array<Charity>;
 }
 
-export interface Charity {
-	charity_id?: number;
-	name?: string;
-	description?: string;
-	website?: string;
-	logo_url?: string;
-}
-
 export interface ViewGoalRequest {
 	goal_id: number;
 }
@@ -271,4 +263,13 @@ export interface ViewGoalResponse {
 	done: boolean;
 	created_at?: number;
 	supervised_at?: number;
+}
+
+export interface Charity {
+	id: number;
+	name: string;
+	short_name: string;
+	description: string;
+	website: string;
+	image: string;
 }

@@ -12,10 +12,21 @@ import { ProfilePage } from './pages/ProfilePage';
 import { PaymentStatusPage } from './pages/PaymentStatusPage';
 import { SupervisionPage } from './pages/SupervisionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import { api } from './config/api';
 import { CONFIG } from './config/constants';
 import ProtectedRoute from './components/ProtectedRoute';
+
+const exampleGoals = [
+  'کاهش ۱۰ کیلو وزن',
+  'خواندن ۵ کتاب در سال',
+  'ترک سیگار',
+  'یادگیری زبان انگلیسی',
+  'ورزش روزانه',
+  'شروع کسب و کار',
+  'تمام کردن پروژه',
+  'صرفه‌جویی ۵ میلیون تومان'
+];
 
 function App() {
   const navigate = useNavigate();
@@ -26,6 +37,11 @@ function App() {
   const [goalTitle, setGoalTitle] = React.useState('');
   const [configLoaded, setConfigLoaded] = useState(false);
   const hasFetchedConfig = useRef(false);
+  
+  // Typing animation state
+  const [typingText, setTypingText] = useState('');
+  const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -133,18 +149,17 @@ function App() {
   return (
     <div className="min-h-screen bg-black" dir="rtl">
       <main className="pt-16">
-        <AuthProvider> {/* Wrap the Routes with AuthProvider */}
-          <Header onShowAuth={() => setShowAuthModal(true)} />
-          <Toaster position="top-center" />
-          <Routes>
-            <Route path="/create-goal" element={<ProtectedRoute element={<CreateGoalPage configLoaded={configLoaded} />} />} />
-            <Route path="/goals" element={<ProtectedRoute element={<GoalsPage />} />} />
-            <Route path="/goals/:id" element={<ProtectedRoute element={<GoalDetailsPage />} />} />
-            <Route path="/supervisions/:id" element={<ProtectedRoute element={<SupervisionPage />} />} />
-            <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
-            <Route path="/payment-status" element={<ProtectedRoute element={<PaymentStatusPage />} />} />
-            <Route path="*" element={<NotFoundPage />} />
-            <Route path="/" element={
+        <Header onShowAuth={() => setShowAuthModal(true)} />
+        <Toaster position="top-center" />
+        <Routes>
+          <Route path="/create-goal" element={<ProtectedRoute element={<CreateGoalPage configLoaded={configLoaded} />} />} />
+          <Route path="/goals" element={<ProtectedRoute element={<GoalsPage />} />} />
+          <Route path="/goals/:id" element={<ProtectedRoute element={<GoalDetailsPage />} />} />
+          <Route path="/supervisions/:id" element={<ProtectedRoute element={<SupervisionPage />} />} />
+          <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
+          <Route path="/payment-status" element={<ProtectedRoute element={<PaymentStatusPage />} />} />
+          <Route path="*" element={<NotFoundPage />} />
+          <Route path="/" element={
               <div className="text-white">
                 <SEO
                   title="موتیو - به اهدافت برس"
@@ -275,7 +290,6 @@ function App() {
               </div>
             } />
           </Routes>
-        </AuthProvider> {/* Correctly close AuthProvider */}
         {/* Footer */}
         <footer className="border-t border-white/10 py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">

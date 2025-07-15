@@ -26,6 +26,20 @@ function App() {
   const [goalTitle, setGoalTitle] = React.useState('');
   const [configLoaded, setConfigLoaded] = useState(false);
   const hasFetchedConfig = useRef(false);
+  const [typingText, setTypingText] = useState('');
+  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
+
+  const examples = [
+    'ترک سیگار',
+    'کاهش ۱۰ کیلو وزن',
+    'خواندن ۵ کتاب',
+    'ورزش روزانه',
+    'یادگیری زبان انگلیسی',
+    'شروع کسب و کار',
+    'تمرین مدیتیشن',
+    'نوشتن کتاب'
+  ];
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -54,6 +68,36 @@ function App() {
     fetchConfig();
   }, []);
 
+  // Typing animation effect
+  useEffect(() => {
+    const currentExample = examples[currentExampleIndex];
+    let timeoutId: NodeJS.Timeout;
+
+    if (isTyping) {
+      if (typingText.length < currentExample.length) {
+        timeoutId = setTimeout(() => {
+          setTypingText(currentExample.slice(0, typingText.length + 1));
+        }, 100 + Math.random() * 100); // Random typing speed for natural feel
+      } else {
+        // Finished typing, wait then start erasing
+        timeoutId = setTimeout(() => {
+          setIsTyping(false);
+        }, 2000);
+      }
+    } else {
+      if (typingText.length > 0) {
+        timeoutId = setTimeout(() => {
+          setTypingText(typingText.slice(0, -1));
+        }, 50);
+      } else {
+        // Finished erasing, move to next example
+        setCurrentExampleIndex((prev) => (prev + 1) % examples.length);
+        setIsTyping(true);
+      }
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [typingText, currentExampleIndex, isTyping, examples]);
   useEffect(() => {
     // Show the modal if not authenticated, not loading, and on the home page,
     // or if redirected to home page from a protected route.

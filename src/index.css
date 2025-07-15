@@ -63,62 +63,6 @@ body {
   color: white !important;
 }
 
-/* Fix year selector dropdown shadows and styling */
-.Calendar__yearSelectorAnimationWrapper {
-  background: #1f2937 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 0.5rem !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-}
-
-.Calendar__yearSelectorWrapper {
-  background: #1f2937 !important;
-  border-radius: 0.5rem !important;
-}
-
-.Calendar__yearSelectorItem {
-  color: white !important;
-  background: transparent !important;
-}
-
-.Calendar__yearSelectorItem:hover {
-  background-color: rgba(239, 68, 68, 0.2) !important;
-  color: white !important;
-}
-
-.Calendar__yearSelectorItem.-selected {
-  background-color: #ef4444 !important;
-  color: white !important;
-}
-
-/* Fix month selector as well for consistency */
-.Calendar__monthSelectorAnimationWrapper {
-  background: #1f2937 !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 0.5rem !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
-}
-
-.Calendar__monthSelectorWrapper {
-  background: #1f2937 !important;
-  border-radius: 0.5rem !important;
-}
-
-.Calendar__monthSelectorItem {
-  color: white !important;
-  background: transparent !important;
-}
-
-.Calendar__monthSelectorItem:hover {
-  background-color: rgba(239, 68, 68, 0.2) !important;
-  color: white !important;
-}
-
-.Calendar__monthSelectorItem.-selected {
-  background-color: #ef4444 !important;
-  color: white !important;
-}
-
 .text-shadow {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }

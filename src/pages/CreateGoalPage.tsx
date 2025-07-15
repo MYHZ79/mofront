@@ -42,7 +42,7 @@ const getMinMaxDates = () => {
   const iranCurrentTime = new Date(utcTime + (iranOffsetMinutes * 60 * 1000));
 
   // Calculate the exact timestamps for min and max allowed deadlines
-  const minAllowedTimestamp = iranCurrentTime.getTime() + (CONFIG.GOAL_DEADLINE.min_goal_hours * 60 * 60 * 1000);
+  const minAllowedTimestamp = iranCurrentTime.getTime() + ((CONFIG.GOAL_DEADLINE.min_goal_hours + 24) * 60 * 60 * 1000);
   const maxAllowedTimestamp = iranCurrentTime.getTime() + (CONFIG.GOAL_DEADLINE.max_goal_hours * 60 * 60 * 1000);
 
   // The minimum selectable date in the picker should be the day that contains minAllowedTimestamp

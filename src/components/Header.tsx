@@ -85,6 +85,19 @@ export function Header({ onShowAuth }: HeaderProps) {
                   )}
                 </Link>
                 <Link
+                  to="/charities"
+                  className={`text-sm font-medium transition-all duration-200 relative ${
+                    isActive('/charities')
+                      ? 'text-red-500'
+                      : 'text-gray-300 hover:text-white'
+                  }`}
+                >
+                  <span className="relative z-10">خیریه‌ها</span>
+                  {isActive('/charities') && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500 transform -translate-y-1"></span>
+                  )}
+                </Link>
+                <Link
                   to="/profile"
                   className={`text-sm font-medium transition-all duration-200 relative ${
                     isActive('/profile')

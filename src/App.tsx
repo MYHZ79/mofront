@@ -8,6 +8,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import { CreateGoalPage } from './pages/CreateGoalPage';
 import { GoalsPage } from './pages/GoalsPage';
 import { GoalDetailsPage } from './pages/GoalDetailsPage';
+import { CharitiesPage } from './pages/CharitiesPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { PaymentStatusPage } from './pages/PaymentStatusPage';
 import { SupervisionPage } from './pages/SupervisionPage';
@@ -151,6 +152,7 @@ function App() {
             <Route path="/create-goal" element={<ProtectedRoute element={<CreateGoalPage configLoaded={configLoaded} />} />} />
             <Route path="/goals" element={<ProtectedRoute element={<GoalsPage />} />} />
             <Route path="/goals/:id" element={<ProtectedRoute element={<GoalDetailsPage />} />} />
+            <Route path="/charities" element={<CharitiesPage />} />
             <Route path="/supervisions/:id" element={<ProtectedRoute element={<SupervisionPage />} />} />
             <Route path="/profile" element={<ProtectedRoute element={<ProfilePage />} />} />
             <Route path="/payment-status" element={<ProtectedRoute element={<PaymentStatusPage />} />} />

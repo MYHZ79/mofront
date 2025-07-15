@@ -15,6 +15,8 @@ import {
   GetPaymentResponse,
   GetSupervisionsRequest,
   GetSupervisionsResponse,
+  GetCharitiesRequest,
+  GetCharitiesResponse,
   Goal,
   JudgeGoalRequest,
   JudgeGoalResponse,
@@ -159,6 +161,14 @@ export const api = {
       apiRequest<GetPaymentResponse>('/getPayment', {
         method: 'POST',
         body: JSON.stringify(data),
+      }),
+  },
+
+  charities: {
+    getAll: () =>
+      apiRequest<GetCharitiesResponse>('/getCharities', {
+        method: 'POST',
+        body: JSON.stringify({} as GetCharitiesRequest),
       }),
   },
 };

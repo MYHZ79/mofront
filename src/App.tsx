@@ -54,39 +54,6 @@ function App() {
     fetchConfig();
   }, []);
 
-  // Typing animation effect
-  useEffect(() => {
-    const currentGoal = exampleGoals[currentGoalIndex];
-    let timeoutId: NodeJS.Timeout;
-
-    if (isTyping) {
-      // Typing effect
-      if (typingText.length < currentGoal.length) {
-        timeoutId = setTimeout(() => {
-          setTypingText(currentGoal.slice(0, typingText.length + 1));
-        }, 100 + Math.random() * 100); // Random typing speed for natural feel
-      } else {
-        // Pause before deleting
-        timeoutId = setTimeout(() => {
-          setIsTyping(false);
-        }, 2000);
-      }
-    } else {
-      // Deleting effect
-      if (typingText.length > 0) {
-        timeoutId = setTimeout(() => {
-          setTypingText(typingText.slice(0, -1));
-        }, 50 + Math.random() * 50); // Faster deletion
-      } else {
-        // Move to next goal
-        setCurrentGoalIndex((prev) => (prev + 1) % exampleGoals.length);
-        setIsTyping(true);
-      }
-    }
-
-    return () => clearTimeout(timeoutId);
-  }, [typingText, currentGoalIndex, isTyping, exampleGoals]);
-
   useEffect(() => {
     // Show the modal if not authenticated, not loading, and on the home page,
     // or if redirected to home page from a protected route.

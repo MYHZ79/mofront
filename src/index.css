@@ -45,7 +45,7 @@ body {
   color: white !important;
 }
 .Calendar__monthSelector, .Calendar__yearSelector {
-  background: #1f2937 !important;
+  background-color: #1f2937 !important;
 }
 .Calendar__monthSelector button, .Calendar__yearSelector button {
   color: white !important;
@@ -56,8 +56,11 @@ body {
 .Calendar__monthText, .Calendar__yearText {
   color: white !important;
 }
-.Calendar__monthArrow, .Calendar__yearArrow {
+.Calendar__monthArrow, .Calendar__yearArrow,.Calendar__monthArrowWrapper {
   border-color: white !important;
+}
+.Calendar__monthArrow {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg class='nc-icon-wrapper' fill='%23ffffff'%3E%3Cdefs stroke='none'%3E%3C/defs%3E%3Cpath class='cls-1' d='M12 23.25V.75' fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5px'%3E%3C/path%3E%3Cpath class='cls-2' d='M22.5 11.25L12 .75 1.5 11.25' fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5px' fill-rule='evenodd'%3E%3C/path%3E%3C/g%3E%3C/svg%3E") !important;
 }
 .Calendar__yearSelectorText {
   color: white !important;
@@ -71,4 +74,51 @@ body {
   font-size: 1.5rem;
   font-weight: bold;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.Calendar__day.-disabled,
+.Calendar__monthSelectorItemText:disabled,
+.Calendar__yearSelectorText:disabled {
+  color: #6b7280 !important; /* Darker gray for disabled elements */
+  opacity: 1 !important; /* Ensure full opacity if it was reduced */
+}
+
+.Calendar__day.-today:not(.-selectedStart):not(.-selectedEnd):not(.-selectedBetween) {
+  font-weight: 600;
+  color: red !important;
+  position: relative;
+}
+
+.Calendar__day.-today:not(.-selectedStart):not(.-selectedEnd):not(.-selectedBetween)::after {
+  content: '';
+  position: absolute;
+  bottom: 0.2em;
+  display: block;
+  width: 0.6em;
+  height: 1px;
+  background: red;
+  left: 50%;
+  opacity: 0.5;
+  transform: translateX(-50%);
+  transition: 0.2s;
+}
+
+.Calendar__monthSelectorItem:not(.-active) .Calendar__monthSelectorItemText:not(:disabled):hover,
+.Calendar__yearSelectorItem:not(.-active) .Calendar__yearSelectorText:not(:disabled):hover {
+  background: rgba(239, 68, 68, 0.2) !important; /* Darker hover background */
+}
+
+
+.Calendar__yearSelectorWrapper::before {
+  background-image: linear-gradient(to top, #1f2937, #1f2937 10%, rgba(31, 41, 55, 0)) !important;
+}
+
+.Calendar__yearSelectorWrapper::after {
+  background-image: linear-gradient(to bottom, #1f2937, #1f2937 10%, rgba(31, 41, 55, 0)) !important;
+}
+
+.Calendar__monthYear.-shown > *:hover,
+.Calendar:not(.-noFocusOutline) .Calendar__monthYear.-shown > *:focus,
+.Calendar__monthYear > *.-activeBackground {
+  background: rgba(239, 68, 68, 0.2) !important; /* Override white hover background for month/year text */
 }

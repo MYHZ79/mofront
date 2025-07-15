@@ -45,19 +45,12 @@ interface ApiResponse<T> {
 }
 
 async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
-  try {
-    const data = await response.json();
-    if (!data.ok && data.error) {
-      const translatedError = errorTranslations[data.error] || data.error;
-      toast.error(translatedError);
-    }
-    return { ...data, status: response.status };
-  } catch (error) {
-    console.error('JSON parsing error:', error);
-    const errorMessage = 'خطا در پردازش پاسخ سرور';
-    toast.error(errorMessage);
-    return { ok: false, error: errorMessage, status: response.status };
+  const data = await response.json();
+  if (!data.ok && data.error) {
+    const translatedError = errorTranslations[data.error] || data.error;
+    toast.error(translatedError);
   }
+  return { ...data, status: response.status }; // Include status
 }
 
 async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {

@@ -238,7 +238,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
         description: goalData.description || undefined,
         value: toRials(parseInt(amountInput)), // Convert Toman to Rials before sending to backend
         deadline: Math.floor(new Date(goalData.deadline).getTime() / 1000),
-        supervisor_phone_number: goalData.supervisor
+        supervisor_phone_number: goalData.supervisor,
         donate_to: goalData.selectedCharity
       } as SetGoalRequest); // Pass SetGoalRequest object
 

@@ -396,7 +396,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
                   value={goalData.title}
                   onChange={(e) => setGoalData({ ...goalData, title: e.target.value })}
                   className="w-full px-4 py-2 pr-10 rounded-lg bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  placeholder="مثال: ترک سیگار"
+                  placeholder="مثال: مطالعه 2 کتاب"
                 />
               </div>
               {errors.title && (

@@ -516,6 +516,8 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
               )}
               {/* <p className="mt-2 text-sm text-gray-400">
                 مبلغ باید بین {formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و {formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد.
+              </p> */}
+            </div>
             <div>
               <label className="block text-lg font-bold mb-2">انتخاب خیریه</label>
               <div className="relative">
@@ -581,8 +583,6 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
               <p className="mt-2 text-sm text-gray-400">
                 در صورت عدم موفقیت در هدف، مبلغ به این خیریه اهدا خواهد شد.
               </p>
-            </div>
-              </p> */}
             </div>
           </div>
         );

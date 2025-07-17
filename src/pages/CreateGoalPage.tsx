@@ -109,11 +109,11 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
     };
 
     fetchCharities();
+  }, []);
+
   const getSelectedCharity = () => {
     return charities.find(charity => charity.short_name === goalData.selectedCharity);
   };
-
-  }, []);
 
   useEffect(() => {
     if (configLoaded) {

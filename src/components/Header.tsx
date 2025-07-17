@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Goal,Target, Plus, LogIn, User, ChevronDown } from 'lucide-react';
+import { Goal,Target,Heart, Plus, LogIn, User, ChevronDown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
@@ -97,19 +97,6 @@ export function Header({ onShowAuth }: HeaderProps) {
                     <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500 transform -translate-y-1"></span>
                   )}
                 </Link>
-                <Link
-                  to="/profile"
-                  className={`text-sm font-medium transition-all duration-200 relative ${
-                    isActive('/profile')
-                      ? 'text-red-500'
-                      : 'text-gray-300 hover:text-white'
-                  }`}
-                >
-                  <span className="relative z-10">پروفایل</span>
-                  {isActive('/profile') && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500 transform -translate-y-1"></span>
-                  )}
-                </Link>
               </nav>
             )}
           </div>
@@ -151,6 +138,13 @@ export function Header({ onShowAuth }: HeaderProps) {
                       >
                         <Target className="w-4 h-4" />
                         اهداف من
+                      </Link>
+                       <Link
+                        to="/charities"
+                        className="block px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/50 hover:text-white transition-colors flex items-center gap-2"
+                      >
+                        <Heart className="w-4 h-4" />
+                        خیریه ها
                       </Link>
                       <button
                         onClick={handleLogout}

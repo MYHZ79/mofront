@@ -106,10 +106,11 @@ export interface Goal {
 	supervisor_email?: string;
 	supervisor_description?: string;
 	status?: number;
-	donated_to?: string;
+	donate_to?: string;
 	done: boolean;
 	created_at?: number;
 	supervised_at?: number;
+	donated_at?: number;
 }
 
 export interface JudgeGoalRequest {
@@ -163,6 +164,7 @@ export interface SetGoalRequest {
 	supervisor_phone_number?: string;
 	supervisor_email?: string;
 	description?: string;
+	donate_to: string; 
 }
 
 export interface SetGoalResponse {

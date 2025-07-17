@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
-import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact, Check, Clock, Gift, ListTodo } from 'lucide-react';
+import { X, AlertCircle, Calendar, DollarSign, Shield, ChevronRight, ChevronLeft, Target, ArrowLeft, Contact, Check, Clock, Gift, ListTodo, Heart, ChevronDown } from 'lucide-react';
 import DatePicker from '@hassanmojab/react-modern-calendar-datepicker';
 import "@hassanmojab/react-modern-calendar-datepicker/lib/DatePicker.css";
 import toast from 'react-hot-toast';
 import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToPersianWords, toRials, toTomans, DayObject, toGregorianDate, toPersianDate } from '../config/constants';
 import { api } from '../config/api';
 import { useAuth } from '../hooks/useAuth'; // Import useAuth
-import { SetGoalRequest } from '../types/api';
+import { SetGoalRequest, Charity } from '../types/api';
 
 interface CreateGoalPageProps {
   configLoaded: boolean;
@@ -22,6 +22,7 @@ interface GoalData {
   deadline: string;
   amount: string;
   supervisor: string;
+  selectedCharity: string;
 }
 
 const normalizePhoneNumber = (phone: string | undefined | null): string => {
@@ -64,12 +65,16 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const { user, isLoading } = useAuth();
   const [consentChecked, setConsentChecked] = useState(false);
+  const [charities, setCharities] = useState<Charity[]>([]);
+  const [charitiesLoading, setCharitiesLoading] = useState(false);
+  const [showCharityDropdown, setShowCharityDropdown] = useState(false);
   const [goalData, setGoalData] = useState<GoalData>({
     title: initialTitle,
     description: '',
     deadline: '', // Initialize empty, will be set in useEffect
     amount: '',
     supervisor: '',
+    selectedCharity: '',
   });
   
   const [selectedDay, setSelectedDay] = useState<DayObject | null>(null); // Initialize null
@@ -77,6 +82,38 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
   const [amountInput, setAmountInput] = useState('');
   const [minimumDate, setMinimumDate] = useState<DayObject | null>(null);
   const [maximumDate, setMaximumDate] = useState<DayObject | null>(null);
+
+  // Fetch charities when component mounts
+  useEffect(() => {
+    const fetchCharities = async () => {
+      setCharitiesLoading(true);
+      try {
+        const response = await api.charities.getAll();
+        if (response.ok && response.data?.charities) {
+          setCharities(response.data.charities);
+          // Set first charity as default if available
+          if (response.data.charities.length > 0) {
+            setGoalData(prev => ({
+              ...prev,
+              selectedCharity: response.data.charities[0].short_name
+            }));
+          }
+        } else {
+          toast.error('خطا در دریافت لیست خیریه‌ها');
+        }
+      } catch (error) {
+        toast.error('خطا در ارتباط با سرور');
+      } finally {
+        setCharitiesLoading(false);
+      }
+    };
+
+    fetchCharities();
+  const getSelectedCharity = () => {
+    return charities.find(charity => charity.short_name === goalData.selectedCharity);
+  };
+
+  }, []);
 
   useEffect(() => {
     if (configLoaded) {
@@ -121,6 +158,9 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
           newErrors.amount = 'مبلغ اجباری است';
         } else if (amount < CONFIG.GOAL_AMOUNT.min_goal_value || amount > CONFIG.GOAL_AMOUNT.max_goal_value) {
           newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و ${formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد`;
+        }
+        if (!goalData.selectedCharity) {
+          newErrors.selectedCharity = 'انتخاب خیریه اجباری است';
         }
         break;
 
@@ -199,6 +239,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
         value: toRials(parseInt(amountInput)), // Convert Toman to Rials before sending to backend
         deadline: Math.floor(new Date(goalData.deadline).getTime() / 1000),
         supervisor_phone_number: goalData.supervisor
+        donate_to: goalData.selectedCharity
       } as SetGoalRequest); // Pass SetGoalRequest object
 
       if (response.ok && response.data?.payment_url) {
@@ -215,6 +256,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
   const renderTimeline = () => {
     const deadlineDate = new Date(goalData.deadline);
     const supervisorCheckDate = new Date(deadlineDate.getTime() - (CONFIG.SUPERVISION_TIMEOUT_HOURS * 60 * 60 * 1000));
+    const selectedCharity = getSelectedCharity();
 
     return (
       <div className="space-y-8">
@@ -283,7 +325,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
               </div>
               <div className="space-y-2">
                 <p className="text-gray-400"><span className="text-green-500">در صورت تایید انجام هدف توسط ناظر:</span><br /> مبلغ {formatAmount(parseInt(amountInput)-CONFIG.GOAL_CREATION_FEE)} تومان به حساب شما بازگردانده می‌شود. (کارمزد ثبت هدف: {formatAmount(CONFIG.GOAL_CREATION_FEE)} تومان)</p>
-                <p className="text-gray-400"><span className="text-red-500">در صورت رد انجام هدف یا عدم پاسخ توسط ناظر: </span><br />این مبلغ توسط موتیو به خیریه اهدا خواهد شد.</p>
+                <p className="text-gray-400"><span className="text-red-500">در صورت رد انجام هدف یا عدم پاسخ توسط ناظر: </span><br />این مبلغ توسط موتیو به خیریه «{selectedCharity?.name || 'انتخاب شده'}» اهدا خواهد شد.</p>
               </div>
             </div>
           </div>
@@ -474,6 +516,72 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
               )}
               {/* <p className="mt-2 text-sm text-gray-400">
                 مبلغ باید بین {formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و {formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد.
+            <div>
+              <label className="block text-lg font-bold mb-2">انتخاب خیریه</label>
+              <div className="relative">
+                <Heart className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+                <div
+                  className="w-full px-4 py-2 pr-10 pl-10 rounded-lg bg-white/10 border border-white/20 text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-between"
+                  onClick={() => setShowCharityDropdown(!showCharityDropdown)}
+                >
+                  <span className="flex-1 text-right">
+                    {charitiesLoading ? 'در حال بارگذاری...' : 
+                     goalData.selectedCharity ? 
+                     getSelectedCharity()?.name || goalData.selectedCharity : 
+                     'انتخاب خیریه'}
+                  </span>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showCharityDropdown ? 'rotate-180' : ''}`} />
+                </div>
+                
+                {showCharityDropdown && !charitiesLoading && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto">
+                    {charities.map((charity) => (
+                      <div
+                        key={charity.id}
+                        className={`px-4 py-3 cursor-pointer hover:bg-gray-700 transition-colors flex items-center gap-3 ${
+                          goalData.selectedCharity === charity.short_name ? 'bg-red-500/20 text-red-400' : 'text-white'
+                        }`}
+                        onClick={() => {
+                          setGoalData({ ...goalData, selectedCharity: charity.short_name });
+                          setShowCharityDropdown(false);
+                        }}
+                      >
+                        {charity.logo_url ? (
+                          <img
+                            src={charity.logo_url}
+                            alt={charity.name}
+                            className="w-8 h-8 rounded-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-8 h-8 bg-pink-500/20 rounded-full flex items-center justify-center">
+                            <Heart className="w-4 h-4 text-pink-400" />
+                          </div>
+                        )}
+                        <div className="flex-1 text-right">
+                          <div className="font-medium">{charity.name}</div>
+                          {charity.description && (
+                            <div className="text-sm text-gray-400 truncate">{charity.description}</div>
+                          )}
+                        </div>
+                        {goalData.selectedCharity === charity.short_name && (
+                          <Check className="w-5 h-5 text-red-400" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {errors.selectedCharity && (
+                <p className="mt-1 text-sm text-red-500">{errors.selectedCharity}</p>
+              )}
+              <p className="mt-2 text-sm text-gray-400">
+                در صورت عدم موفقیت در هدف، مبلغ به این خیریه اهدا خواهد شد.
+              </p>
+            </div>
               </p> */}
             </div>
           </div>

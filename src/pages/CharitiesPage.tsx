@@ -82,14 +82,40 @@ export function CharitiesPage() {
             <Heart className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-            خیریه‌های همکار موتیو
+            خیریه‌ها
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            در صورتی که به اهدافتان نرسید یا ناظر انجام هدف را تایید نکند، مبلغ تعهد شده به یکی از خیریه‌های معتبر زیر اهدا خواهد شد.
+            در صورتی که به هدفتون نرسید، مبلغ تعهد شده به یکی از خیریه‌های معتبر زیر اهدا خواهد شد.
           </p>
         </div>
 
-        {/* Process Explanation */}
+                {/* Trust Section */}
+        <div className="mt-16 mb-16 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-6 h-6 text-green-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-green-300">تضمین شفافیت</h2>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="font-bold text-white mb-3">انتخاب خیریه‌ها</h3>
+              <p className="text-gray-300 leading-relaxed">
+                تمامی خیریه‌های همکار موتیو دارای مجوزهای لازم بوده و فعالیت‌های آن‌ها به صورت شفاف و قابل پیگیری است.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-bold text-white mb-3">گزارش‌دهی</h3>
+              <p className="text-gray-300 leading-relaxed">
+                تمامی اهدای انجام شده از طریق موتیو ثبت و گزارش می‌شود تا شما از مصرف صحیح کمک‌هایتان مطمئن باشید.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Process Explanation
         <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-8 mb-16">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center">
@@ -135,7 +161,7 @@ export function CharitiesPage() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Charities List */}
         {charities.length === 0 ? (
@@ -202,32 +228,6 @@ export function CharitiesPage() {
             ))}
           </div>
         )}
-
-        {/* Trust Section */}
-        <div className="mt-16 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-400" />
-            </div>
-            <h2 className="text-2xl font-bold text-green-300">تضمین شفافیت</h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="font-bold text-white mb-3">انتخاب خیریه‌ها</h3>
-              <p className="text-gray-300 leading-relaxed">
-                تمامی خیریه‌های همکار موتیو دارای مجوزهای لازم بوده و فعالیت‌های آن‌ها به صورت شفاف و قابل پیگیری است.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-bold text-white mb-3">گزارش‌دهی</h3>
-              <p className="text-gray-300 leading-relaxed">
-                تمامی اهدای انجام شده از طریق موتیو ثبت و گزارش می‌شود تا شما از مصرف صحیح کمک‌هایتان مطمئن باشید.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

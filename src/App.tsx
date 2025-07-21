@@ -133,10 +133,10 @@ function App() {
   const handleAuthSuccess = React.useCallback(() => {
     setShowAuthModal(false);
     const redirect = searchParams.get('redirect');
-    if (isAuthenticated && redirect){
+    if (redirect){
       navigate(decodeURIComponent(redirect));
-    } else if (isAuthenticated) {
-      navigate(goalTitle ? '/create-goal' : '/');
+    } else if (goalTitle) {
+      navigate('/create-goal', { state: { goalTitle } });
     } else {
       navigate('/');
     }

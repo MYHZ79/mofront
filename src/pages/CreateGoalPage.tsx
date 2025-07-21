@@ -324,7 +324,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
                 <h3 className="font-bold">نتیجه</h3>
               </div>
               <div className="space-y-2">
-                <p className="text-gray-400"><span className="text-green-500">در صورت تایید انجام هدف توسط ناظر:</span><br /> مبلغ {formatAmount(parseInt(amountInput)-CONFIG.GOAL_CREATION_FEE)} تومان به حساب شما بازگردانده می‌شود. (کارمزد ثبت هدف: {formatAmount(CONFIG.GOAL_CREATION_FEE)} تومان)</p>
+                <p className="text-gray-400"><span className="text-green-500">در صورت تایید انجام هدف توسط ناظر:</span><br /> مبلغ {formatAmount(parseInt(amountInput)-CONFIG.GOAL_CREATION_FEE)} تومان به حساب شما بازگردانده می‌شود. {CONFIG.GOAL_CREATION_FEE != 0 && `(کارمزد ثبت هدف: ${formatAmount(CONFIG.GOAL_CREATION_FEE)} تومان)`}</p>
                 <p className="text-gray-400"><span className="text-red-500">در صورت رد انجام هدف یا عدم پاسخ توسط ناظر: </span><br />این مبلغ توسط موتیو به خیریه «{selectedCharity?.name || 'انتخاب شده'}» اهدا خواهد شد.</p>
               </div>
             </div>

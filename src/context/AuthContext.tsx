@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import { api } from '../config/api';
 import { GetMeResponse, AuthRequest } from '../types/api';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -20,6 +21,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+
+  const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<GetMeResponse | null>(null);
@@ -41,13 +44,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(response.data);
         setIsAuthenticated(true);
       } else {
-        if (response.status === 0) {
-          setIsAuthenticated(!!token);
-          setUser(null);
-        } else {
+        // Only remove token if the status is 401 (Unauthorized)
+        if (response.status === 401) {
           localStorage.removeItem('token');
           setIsAuthenticated(false);
           setUser(null);
+        } else{
+          setIsAuthenticated(!!token);
+          setUser(null); // Clear user data as it couldn't be fetched
         }
       }
     } catch (error) {
@@ -73,6 +77,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('token');
     setIsAuthenticated(false);
     setUser(null);
+    navigate('/'); // Navigate to the main page after logout
   };
 
   useEffect(() => {

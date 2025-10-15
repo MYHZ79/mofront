@@ -3,6 +3,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useRef, // Import useRef
   ReactNode,
 } from 'react';
 import { api } from '../config/api';
@@ -26,15 +27,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [user, setUser] = useState<GetMeResponse | null>(null);
+  const isCheckingAuth = useRef(false); // Add a ref to track if checkAuth is in progress
 
   const checkAuth = async () => {
+    if (isCheckingAuth.current) {
+      return; // Prevent multiple concurrent calls
+    }
+
+    isCheckingAuth.current = true;
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
       if (!token) {
         setIsAuthenticated(false);
         setUser(null);
-        setIsLoading(false); // Ensure isLoading is set to false here too
+        setIsLoading(false);
         return;
       }
 
@@ -60,6 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(null);
     } finally {
       setIsLoading(false);
+      isCheckingAuth.current = false; // Reset the ref after the check is complete
     }
   };
 
@@ -67,7 +75,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const response = await api.auth.login({ phone_number, password, code } as AuthRequest);
     if (response.ok && response.data) {
       localStorage.setItem('token', response.data.access_token || '');
-      await checkAuth(); // Call checkAuth after successful login to get user data
+      // No need to await checkAuth here, as it will be called by useEffect or handle subsequent calls
+      // We can just trigger it and let the ref handle concurrency
+      checkAuth();
       return true;
     }
     return false;

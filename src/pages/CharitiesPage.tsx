@@ -1,40 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { SEO } from '../components/SEO';
 import { Heart, ExternalLink, Globe, Users, Target, DollarSign, Shield, CheckCircle, ArrowRight, Gift, Sparkles } from 'lucide-react';
 import { ErrorState } from '../components/ErrorState';
 import { EmptyState } from '../components/EmptyState';
-import { api } from '../config/api';
-import { Charity, GetCharitiesResponse } from '../types/api';
+import { useCharities } from '../context/CharitiesContext'; // Import useCharities
 
 export function CharitiesPage() {
-  const [charities, setCharities] = useState<Charity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const hasFetched = useRef(false);
+  const { charities, isLoadingCharities, charitiesError, fetchCharities } = useCharities(); // Use the context hook
 
-  useEffect(() => {
-    const fetchCharities = async () => {
-      if (hasFetched.current) return;
-      hasFetched.current = true;
-
-      try {
-        const response = await api.charities.getAll();
-        if (response.ok && response.data?.charities) {
-          setCharities(response.data.charities);
-        } else {
-          setError(response.error || 'خطا در دریافت لیست خیریه‌ها');
-        }
-      } catch (error) {
-        setError('خطا در ارتباط با سرور');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCharities();
-  }, []);
-
-  if (loading) {
+  if (isLoadingCharities) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>
@@ -42,7 +16,7 @@ export function CharitiesPage() {
     );
   }
 
-  if (error) {
+  if (charitiesError) {
     return (
       <div className="min-h-screen bg-black text-white" dir="rtl">
         <SEO
@@ -53,12 +27,9 @@ export function CharitiesPage() {
           <div className="bg-gray-900 rounded-xl">
             <ErrorState
               title="خطا در دریافت اطلاعات"
-              message={error}
+              message={charitiesError}
               onRetry={() => {
-                setError(null);
-                setLoading(true);
-                hasFetched.current = false;
-                window.location.reload();
+                fetchCharities(); // Re-fetch charities on retry
               }}
               onGoHome={() => window.location.href = '/'}
             />

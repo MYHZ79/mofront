@@ -8,7 +8,8 @@ import toast from 'react-hot-toast';
 import { CONFIG, formatAmount, isValidIranianMobile, validateDeadline, numberToPersianWords, toRials, toTomans, DayObject, toGregorianDate, toPersianDate } from '../config/constants';
 import { api } from '../config/api';
 import { useAuth } from '../hooks/useAuth'; // Import useAuth
-import { SetGoalRequest, Charity } from '../types/api';
+import { SetGoalRequest } from '../types/api';
+import { useCharities } from '../context/CharitiesContext'; // Import useCharities
 
 interface CreateGoalPageProps {
   configLoaded: boolean;
@@ -64,9 +65,8 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
 
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const { user, isLoading } = useAuth();
+  const { charities, isLoadingCharities, charitiesError } = useCharities(); // Use charities from context
   const [consentChecked, setConsentChecked] = useState(false);
-  const [charities, setCharities] = useState<Charity[]>([]);
-  const [charitiesLoading, setCharitiesLoading] = useState(false);
   const [showCharityDropdown, setShowCharityDropdown] = useState(false);
   const [goalData, setGoalData] = useState<GoalData>({
     title: initialTitle,
@@ -83,33 +83,15 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
   const [minimumDate, setMinimumDate] = useState<DayObject | null>(null);
   const [maximumDate, setMaximumDate] = useState<DayObject | null>(null);
 
-  // Fetch charities when component mounts
+  // Set initial selected charity when charities data is loaded
   useEffect(() => {
-    const fetchCharities = async () => {
-      setCharitiesLoading(true);
-      try {
-        const response = await api.charities.getAll();
-        if (response.ok && response.data?.charities) {
-          setCharities(response.data.charities);
-          // Set first charity as default if available
-          if (response.data.charities.length > 0) {
-            setGoalData(prev => ({
-              ...prev,
-              selectedCharity: response.data.charities[0].short_name
-            }));
-          }
-        } else {
-          toast.error('خطا در دریافت لیست خیریه‌ها');
-        }
-      } catch (error) {
-        toast.error('خطا در ارتباط با سرور');
-      } finally {
-        setCharitiesLoading(false);
-      }
-    };
-
-    fetchCharities();
-  }, []);
+    if (!isLoadingCharities && charities.length > 0 && !goalData.selectedCharity) {
+      setGoalData(prev => ({
+        ...prev,
+        selectedCharity: charities[0].short_name
+      }));
+    }
+  }, [charities, isLoadingCharities, goalData.selectedCharity]);
 
   const getSelectedCharity = () => {
     return charities.find(charity => charity.short_name === goalData.selectedCharity);
@@ -527,7 +509,8 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
                   onClick={() => setShowCharityDropdown(!showCharityDropdown)}
                 >
                   <span className="flex-1 text-right">
-                    {charitiesLoading ? 'در حال بارگذاری...' : 
+                    {isLoadingCharities ? 'در حال بارگذاری...' : 
+                     charitiesError ? 'خطا در بارگذاری خیریه‌ها' :
                      goalData.selectedCharity ? 
                      getSelectedCharity()?.name || goalData.selectedCharity : 
                      'انتخاب خیریه'}
@@ -535,7 +518,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
                   <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${showCharityDropdown ? 'rotate-180' : ''}`} />
                 </div>
                 
-                {showCharityDropdown && !charitiesLoading && (
+                {showCharityDropdown && !isLoadingCharities && !charitiesError && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto">
                     {charities.map((charity) => (
                       <div

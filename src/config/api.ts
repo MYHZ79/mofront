@@ -38,7 +38,7 @@ import {
   GetCharitiesResponse, // Added
 } from '../types/api';
 
-const API_BASE_URL = 'https://imotiv.ir/apidev';
+const API_BASE_URL = 'https://imotiv.ir/api';
 
 interface ApiResponse<T> {
   ok: boolean;

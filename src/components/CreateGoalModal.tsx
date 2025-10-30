@@ -193,7 +193,7 @@ export function CreateGoalModal({ isOpen, onClose, initialGoalTitle }: CreateGoa
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">شماره موبایل سرپرست</label>
+              <label className="block text-sm font-medium mb-2">شماره موبایل ناظر هدف</label>
               <div className="relative">
                 <Shield className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
                 <input

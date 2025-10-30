@@ -211,7 +211,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
       const normalizedUserPhone = normalizePhoneNumber(user?.phone_number);
       const normalizedSupervisorPhone = normalizePhoneNumber(value);
       if (normalizedUserPhone && normalizedUserPhone === normalizedSupervisorPhone) {
-        newErrors.supervisor = 'شماره موبایل سرپرست نمی‌تواند با شماره شما یکسان باشد';
+        newErrors.supervisor = 'شماره موبایل ناظر هدف نمی‌تواند با شماره شما یکسان باشد';
       }
     }
     setErrors(newErrors);

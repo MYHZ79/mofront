@@ -138,8 +138,10 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
         const amount = Number(amountInput);
         if (!amount) {
           newErrors.amount = 'مبلغ اجباری است';
-        } else if (amount < CONFIG.GOAL_AMOUNT.min_goal_value || amount > CONFIG.GOAL_AMOUNT.max_goal_value) {
-          newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و ${formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد`;
+        } else if (amount < CONFIG.GOAL_AMOUNT.min_goal_value) {
+          newErrors.amount = `حداقل مبلغ ${formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} تومان است`;
+        } else if (amount > CONFIG.GOAL_AMOUNT.max_goal_value) {
+          newErrors.amount = `حداکثر مبلغ ${formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان است`;
         }
         if (!goalData.selectedCharity) {
           newErrors.selectedCharity = 'انتخاب خیریه اجباری است';
@@ -186,8 +188,10 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
 
     if (!amount) {
       newErrors.amount = 'مبلغ اجباری است';
-    } else if (amount < CONFIG.GOAL_AMOUNT.min_goal_value || amount > CONFIG.GOAL_AMOUNT.max_goal_value) {
-      newErrors.amount = `مبلغ باید بین ${formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و ${formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد`;
+    } else if (amount < CONFIG.GOAL_AMOUNT.min_goal_value) {
+      newErrors.amount = `حداقل مبلغ ${formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} تومان است`;
+    } else if (amount > CONFIG.GOAL_AMOUNT.max_goal_value) {
+      newErrors.amount = `حداکثر مبلغ ${formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان است`;
     }
 
     setErrors(newErrors);
@@ -488,13 +492,13 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
                   dir="ltr"
                 />
               </div>
-              {errors.amount && (
-                <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
-              )}
-              {!errors.amount && amountInput && (
+              {amountInput && (
                 <p className="mt-1 text-sm text-gray-400">
                   {numberToPersianWords(Number(amountInput))} تومان
                 </p>
+              )}
+              {errors.amount && (
+                <p className="mt-1 text-sm text-red-500">{errors.amount}</p>
               )}
               {/* <p className="mt-2 text-sm text-gray-400">
                 مبلغ باید بین {formatAmount(CONFIG.GOAL_AMOUNT.min_goal_value)} و {formatAmount(CONFIG.GOAL_AMOUNT.max_goal_value)} تومان باشد.
@@ -533,7 +537,7 @@ export function CreateGoalPage({ configLoaded }: CreateGoalPageProps) {
                       >
                         {charity.logo_url ? (
                           <img
-                            src={charity.logo_url}
+                            src={charity.image}
                             alt={charity.name}
                             className="w-8 h-8 rounded-full object-cover"
                             onError={(e) => {

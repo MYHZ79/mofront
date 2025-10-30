@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SEO } from '../components/SEO';
-import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, ArrowRight, Shield, Flag } from 'lucide-react';
+import { Target, Calendar, DollarSign, User, Mail, Phone, Clock, CheckCircle, XCircle, ArrowLeft, Quote, ArrowRight, Shield, Flag, Heart, Gift, ExternalLink } from 'lucide-react';
 import { TwitterShareButton, TwitterIcon, TelegramShareButton, TelegramIcon, WhatsappShareButton, WhatsappIcon, LinkedinShareButton, LinkedinIcon } from 'react-share';
 import toast from 'react-hot-toast';
 import { ErrorState } from '../components/ErrorState';
@@ -10,6 +10,7 @@ import { formatAmount, toTomans, CONFIG } from '../config/constants';
 import { api } from '../config/api';
 import { formatDistanceToNow, differenceInSeconds, addHours, subHours } from 'date-fns';
 import { useAuth } from '../hooks/useAuth';
+import { useCharities } from '../context/CharitiesContext';
 
 export function GoalDetailsPage() {
   const { id } = useParams();
@@ -24,7 +25,7 @@ export function GoalDetailsPage() {
   const shareUrl = window.location.href;
   const shareTitle = goal ? `هدف من در موتیو: ${goal.goal}` : '';
   const { user, isLoading: isAuthLoading } = useAuth(); // Get isLoading from useAuth
-  console.log(user)
+  const { charities, isLoadingCharities, charitiesError } = useCharities();
   const hasFetchedGoal = useRef(false);
 
   useEffect(() => {
@@ -191,6 +192,49 @@ export function GoalDetailsPage() {
     return date.toLocaleDateString('fa-IR') + ' ' + date.toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
   };
 
+  if (isLoadingCharities) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-500 border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (charitiesError) {
+    return (
+      <div className="min-h-screen bg-black text-white" dir="rtl">
+        <SEO
+          title="خطا - موتیو"
+          description="خطا در بارگذاری اطلاعات خیریه‌ها"
+        />
+        <div className="max-w-3xl mx-auto p-4 md:p-8">
+          <button
+            onClick={() => navigate('/goals')}
+            className="flex items-center gap-2 text-gray-400 hover:text-white mb-8"
+          >
+            <ArrowRight className="w-5 h-5" />
+            بازگشت به لیست اهداف
+          </button>
+          
+          <div className="bg-gray-900 rounded-xl">
+            <ErrorState
+              title="خطا در بارگذاری خیریه‌ها"
+              message={charitiesError}
+              onRetry={() => window.location.reload()}
+              onGoHome={() => navigate('/goals')}
+              showHomeButton={true}
+              icon={<Heart className="w-8 h-8 text-red-500" />}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const selectedCharity = goal?.donate_to
+    ? charities.find(charity => charity.short_name === goal.donate_to)
+    : null;
+
   return (
     <div className="min-h-screen bg-black text-white p-4 md:p-8" dir="rtl">
       <SEO
@@ -256,6 +300,51 @@ export function GoalDetailsPage() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div className="space-y-4">
+              {goal.creator_first_name && goal.creator_last_name && (
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">ایجاد کننده</p>
+                    <p>{goal.creator_first_name} {goal.creator_last_name}</p>
+                  </div>
+                </div>
+              )}
+
+              {goal.phone_number && (
+                <div className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">شماره تماس مالک هدف</p>
+                    <p>{goal.phone_number}</p>
+                  </div>
+                </div>
+              )}
+
+              {goal.email && (
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">ایمیل مالک هدف</p>
+                    <p dir="ltr">{goal.email}</p>
+                  </div>
+                </div>
+              )}
+
+              {goal.supervisor_phone_number && (
+                <div className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">شماره تماس ناظر</p>
+                    <p >{goal.supervisor_phone_number}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+
+
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-gray-400" />
@@ -282,33 +371,30 @@ export function GoalDetailsPage() {
                   </p>
                 </div>
               </div>
+
+               {selectedCharity && (
+                <div className="flex items-center gap-3">
+                  <Gift className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">خیریه انتخابی</p>
+                    <p>
+                      {selectedCharity.name}
+                      {selectedCharity.website && (
+                        <a
+                          href={selectedCharity.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors text-sm font-medium group"
+                        >
+                          <ExternalLink className="w-3 h-3 group-hover:scale-110 transition-transform" />
+                        </a>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <User className="w-5 h-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-400">ایجاد کننده</p>
-                  <p>{goal.creator_first_name} {goal.creator_last_name}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-400">شماره تماس</p>
-                  <p dir="ltr">{goal.phone_number}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-400">ایمیل</p>
-                  <p dir="ltr">{goal.email}</p>
-                </div>
-              </div>
-            </div>
           </div>
 
           {!goal.supervised_at && remaining >= 0 && countdown ? (

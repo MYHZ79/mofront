@@ -74,7 +74,7 @@ export function CreateGoalModal({ isOpen, onClose, initialGoalTitle }: CreateGoa
         if (!isValidIranianMobile(goalData.observer)) {
           newErrors.observer = 'شماره موبایل معتبر نیست';
         } else if (goalData.observer === goalData.supervisor) {
-          newErrors.observer = 'ناظر نمی‌تواند با سرپرست یکسان باشد';
+          newErrors.observer = 'ناظر نمی‌تواند با مالک هدف یکسان باشد';
         }
         break;
     }
@@ -209,7 +209,7 @@ export function CreateGoalModal({ isOpen, onClose, initialGoalTitle }: CreateGoa
                 <p className="mt-1 text-sm text-red-500">{errors.supervisor}</p>
               )}
               <p className="mt-2 text-sm text-gray-400">
-                سرپرست شما باید یک شماره موبایل ایرانی معتبر داشته باشد.
+                ناظر شما باید یک شماره موبایل ایرانی معتبر داشته باشد.
               </p>
             </div>
           </div>
@@ -275,7 +275,7 @@ export function CreateGoalModal({ isOpen, onClose, initialGoalTitle }: CreateGoa
                   <dd className="mt-1">{goalData.amount} تومان</dd>
                 </div>
                 <div>
-                  <dt className="text-sm text-gray-400">شماره موبایل سرپرست</dt>
+                  <dt className="text-sm text-gray-400">شماره موبایل ناظر</dt>
                   <dd className="mt-1 font-mono">{goalData.supervisor}</dd>
                 </div>
                 <div>

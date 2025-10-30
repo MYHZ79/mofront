@@ -168,8 +168,7 @@ export const api = {
   charities: {
     getAll: () =>
       apiRequest<GetCharitiesResponse>('/getCharities', {
-        method: 'POST',
-        body: JSON.stringify({} as GetCharitiesRequest),
+        method: 'GET',
       }),
   },
 };

@@ -14,6 +14,7 @@ import { PaymentStatusPage } from './pages/PaymentStatusPage';
 import { SupervisionPage } from './pages/SupervisionPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { CharitiesProvider } from './context/CharitiesContext';
 import { api } from './config/api';
 import { CONFIG } from './config/constants';
 import ProtectedRoute from './components/ProtectedRoute';

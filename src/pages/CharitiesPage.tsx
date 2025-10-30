@@ -119,15 +119,15 @@ export function CharitiesPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {charities.map((charity) => (
+            {charities.map((charity, index) => (
               <div
-                key={charity.charity_id}
+                key={charity.id || index}
                 className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800/50 hover:border-gray-700/50 transition-all duration-300 hover:transform hover:scale-[1.02] hover:shadow-xl hover:shadow-gray-900/20"
               >
-                {charity.logo_url && (
+                {charity.image && (
                   <div className="w-16 h-16 bg-gray-800/50 rounded-xl flex items-center justify-center mb-4 overflow-hidden">
                     <img
-                      src={charity.logo_url}
+                      src={charity.image}
                       alt={`لوگو ${charity.name}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
